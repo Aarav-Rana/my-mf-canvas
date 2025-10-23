@@ -5,7 +5,8 @@ import { PortfolioTable } from "@/components/Portfolio/PortfolioTable";
 import { useMultipleFundDetails } from "@/hooks/useMutualFunds";
 import { PortfolioHolding } from "@/types/mutualfund";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, User } from "lucide-react";
 
 // Sample portfolio holdings with popular Indian mutual funds
 const SAMPLE_HOLDINGS = [
@@ -56,7 +57,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/10 to-background">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-border/20 bg-[hsl(0,0%,0%)] backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -64,11 +65,20 @@ const Index = () => {
                 <TrendingUp className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                <h1 className="text-2xl md:text-3xl font-bold text-white">
                   FundTracker
                 </h1>
-                <p className="text-sm text-muted-foreground">Indian Mutual Funds Portfolio</p>
+                <p className="text-sm text-white/70">Indian Mutual Funds Portfolio</p>
               </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">My Profile</span>
+              </Button>
+              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 hover:text-white">
+                Membership
+              </Button>
             </div>
           </div>
         </div>
