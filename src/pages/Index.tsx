@@ -6,7 +6,7 @@ import { useMultipleFundDetails } from "@/hooks/useMutualFunds";
 import { PortfolioHolding } from "@/types/mutualfund";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, User } from "lucide-react";
+import { TrendingUp, User, Bell } from "lucide-react";
 
 // Sample portfolio holdings with popular Indian mutual funds
 const SAMPLE_HOLDINGS = [
@@ -77,6 +77,12 @@ const Index = () => {
               </Button>
               <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
                 Markets
+              </Button>
+              <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
+                News
+              </Button>
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 hover:text-white">
+                <Bell className="h-4 w-4" />
               </Button>
               <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
                 <User className="h-4 w-4" />
