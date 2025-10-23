@@ -76,7 +76,7 @@ const Index = () => {
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">My Profile</span>
               </Button>
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 hover:text-white">
+              <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
                 Membership
               </Button>
             </div>
