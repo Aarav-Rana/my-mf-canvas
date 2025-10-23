@@ -73,10 +73,16 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-3">
               <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
+                Watchlist
+              </Button>
+              <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
+                Markets
+              </Button>
+              <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">My Profile</span>
               </Button>
-              <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+              <Button className="bg-[hsl(var(--accent-dark))] text-accent-dark-foreground hover:bg-[hsl(var(--accent-dark))]/90">
                 Membership
               </Button>
             </div>
