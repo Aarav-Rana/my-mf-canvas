@@ -6,7 +6,7 @@ import { useMultipleFundDetails } from "@/hooks/useMutualFunds";
 import { PortfolioHolding } from "@/types/mutualfund";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, User, Bell } from "lucide-react";
+import { TrendingUp, User, Bell, Twitter, Linkedin } from "lucide-react";
 
 // Sample portfolio holdings with popular Indian mutual funds
 const SAMPLE_HOLDINGS = [
@@ -166,9 +166,7 @@ const Index = () => {
             <div>
               <h3 className="font-bold text-lg mb-3">About Us</h3>
               <p className="text-sm leading-relaxed opacity-90">
-                We are a leading financial services firm dedicated to helping investors make informed decisions. 
-                Our platform provides comprehensive portfolio tracking, market insights, and personalized investment 
-                strategies to maximize your financial growth.
+                We help investors make informed decisions with comprehensive portfolio tracking and market insights.
               </p>
             </div>
             
@@ -188,12 +186,12 @@ const Index = () => {
               <div className="space-y-2 text-sm opacity-90">
                 <p>Email: contact@fundtracker.com</p>
                 <p>Phone: +91 98765 43210</p>
-                <div className="flex gap-4 mt-3">
-                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:underline hover:opacity-100">
-                    Twitter/X
+                <div className="flex gap-3 mt-3">
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 transition-opacity">
+                    <Twitter className="h-5 w-5" />
                   </a>
-                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:underline hover:opacity-100">
-                    LinkedIn
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 transition-opacity">
+                    <Linkedin className="h-5 w-5" />
                   </a>
                 </div>
               </div>
