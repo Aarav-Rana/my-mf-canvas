@@ -57,7 +57,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/10 to-background">
       {/* Header */}
-      <header className="border-b border-border/20 bg-[hsl(0,0%,0%)] backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-border/20 bg-[hsl(var(--header-bg))] backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -65,28 +65,31 @@ const Index = () => {
                 <TrendingUp className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white">
+                <h1 className="text-2xl md:text-3xl font-bold text-[hsl(var(--header-text))]">
                   FundTracker
                 </h1>
-                <p className="text-sm text-white/70">Indian Mutual Funds Portfolio</p>
+                <p className="text-sm text-[hsl(var(--header-text))]/70">Indian Mutual Funds Portfolio</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
                 Watchlist
               </Button>
-              <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
                 Markets
               </Button>
-              <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
                 News
               </Button>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" size="icon" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
                 <Bell className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">My Profile</span>
+              </Button>
+              <Button variant="outline" className="border-[hsl(var(--header-text))] text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
+                Sign In / Register
               </Button>
               <Button className="bg-[hsl(var(--accent-dark))] text-accent-dark-foreground hover:bg-[hsl(var(--accent-dark))]/90">
                 Membership
@@ -156,9 +159,50 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 mt-12 py-6 bg-card/50">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>Data provided by MFAPI • Updated every 5 minutes</p>
+      <footer className="mt-12 bg-[hsl(var(--footer-bg))] text-white">
+        <div className="container mx-auto px-4 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {/* About Us Section */}
+            <div>
+              <h3 className="font-bold text-lg mb-3">About Us</h3>
+              <p className="text-sm leading-relaxed opacity-90">
+                We are a leading financial services firm dedicated to helping investors make informed decisions. 
+                Our platform provides comprehensive portfolio tracking, market insights, and personalized investment 
+                strategies to maximize your financial growth.
+              </p>
+            </div>
+            
+            {/* Products Section */}
+            <div>
+              <h3 className="font-bold text-lg mb-3">Products</h3>
+              <ul className="space-y-2 text-sm">
+                <li className="hover:underline cursor-pointer opacity-90 hover:opacity-100">Portfolio Management</li>
+                <li className="hover:underline cursor-pointer opacity-90 hover:opacity-100">Tracking</li>
+                <li className="hover:underline cursor-pointer opacity-90 hover:opacity-100">Investment Advising</li>
+              </ul>
+            </div>
+            
+            {/* Contact Section */}
+            <div>
+              <h3 className="font-bold text-lg mb-3">Contact</h3>
+              <div className="space-y-2 text-sm opacity-90">
+                <p>Email: contact@fundtracker.com</p>
+                <p>Phone: +91 98765 43210</p>
+                <div className="flex gap-4 mt-3">
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:underline hover:opacity-100">
+                    Twitter/X
+                  </a>
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:underline hover:opacity-100">
+                    LinkedIn
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="pt-6 border-t border-white/20 text-center text-sm opacity-75">
+            <p>Data provided by MFAPI • Updated every 5 minutes</p>
+          </div>
         </div>
       </footer>
     </div>
