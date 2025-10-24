@@ -34,8 +34,8 @@ All colors MUST be HSL.
     --accent-dark: 158 64% 38%;
     --accent-dark-foreground: 0 0% 100%;
     
-    --header-bg: 118 16% 22%;
-    --header-text: 68 33% 96%;
+    --header-bg: 68 33% 96%;
+    --header-text: 118 16% 22%;
     --footer-bg: 171 69% 15%;
 
     --destructive: 0 84% 60%;
@@ -108,8 +108,8 @@ All colors MUST be HSL.
     --accent-dark: 158 64% 38%;
     --accent-dark-foreground: 0 0% 100%;
     
-    --header-bg: 118 16% 22%;
-    --header-text: 68 33% 96%;
+    --header-bg: 68 33% 96%;
+    --header-text: 118 16% 22%;
     --footer-bg: 171 69% 15%;
 
     --destructive: 0 63% 31%;
