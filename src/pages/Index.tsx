@@ -61,8 +61,8 @@ const Index = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-primary to-primary-glow rounded-lg">
-                <TrendingUp className="h-6 w-6 text-primary-foreground" />
+              <div className="p-2 rounded-lg">
+                <TrendingUp className="h-6 w-6 text-[hsl(var(--header-text))]" />
               </div>
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-[hsl(var(--header-text))]">
