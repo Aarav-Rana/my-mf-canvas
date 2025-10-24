@@ -126,28 +126,8 @@ const Index = () => {
                 returnsPercentage={returnsPercentage}
               />
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+              <div className="mt-8">
                 <PortfolioPieChart holdings={portfolioHoldings} />
-                <div className="flex flex-col justify-center space-y-4">
-                  <div className="p-6 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20">
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Live Data</h3>
-                    <p className="text-sm text-muted-foreground">
-                      All NAV values are fetched in real-time from MFAPI and updated every 5 minutes
-                    </p>
-                  </div>
-                  <div className="p-6 rounded-xl bg-gradient-to-br from-accent/10 to-primary/10 border border-accent/20">
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Portfolio Health</h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Your portfolio is showing {totalReturns >= 0 ? "positive" : "negative"} returns
-                    </p>
-                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${totalReturns >= 0 ? "bg-accent" : "bg-destructive"} transition-all duration-500`}
-                        style={{ width: `${Math.min(Math.abs(returnsPercentage) * 2, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
               </div>
 
               <div className="mt-8">
