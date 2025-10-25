@@ -86,7 +86,7 @@ const Watchlist = () => {
                 onClick={() => navigate("/")}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Portfolio
+                Home
               </Button>
               <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
                 Markets
@@ -190,29 +190,20 @@ const Watchlist = () => {
           )}
         </section>
 
-        {/* Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="border-border/50 bg-gradient-to-br from-primary/10 to-accent/10">
-            <CardHeader>
-              <CardTitle className="text-lg text-card-foreground">Track Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-card-foreground/70">
-                Monitor NAV changes and performance metrics of your watchlisted funds in real-time
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-border/50 bg-gradient-to-br from-accent/10 to-primary/10">
-            <CardHeader>
-              <CardTitle className="text-lg text-card-foreground">Smart Alerts</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-card-foreground/70">
-                Get notified when your watchlisted funds reach target NAV or show significant changes
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Info Card */}
+        <Card className="border-border/50 bg-gradient-to-br from-primary/10 to-accent/10">
+          <CardHeader>
+            <CardTitle className="text-lg text-card-foreground">Track Performance & Get Smart Alerts</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-card-foreground/70">
+              Monitor NAV changes and performance metrics of your watchlisted funds in real-time
+            </p>
+            <p className="text-sm text-card-foreground/70">
+              Get notified when your watchlisted funds reach target NAV or show significant changes
+            </p>
+          </CardContent>
+        </Card>
       </main>
 
       {/* Footer */}
