@@ -7,6 +7,7 @@ import { PortfolioHolding } from "@/types/mutualfund";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, User, Bell, Twitter, Linkedin } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Sample portfolio holdings with popular Indian mutual funds
 const SAMPLE_HOLDINGS = [
@@ -18,6 +19,7 @@ const SAMPLE_HOLDINGS = [
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
   const [portfolioHoldings, setPortfolioHoldings] = useState<PortfolioHolding[]>([]);
   
   const schemeCodes = SAMPLE_HOLDINGS.map(h => h.schemeCode);
@@ -72,7 +74,11 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
+              <Button 
+                variant="ghost" 
+                className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
+                onClick={() => navigate("/watchlist")}
+              >
                 Watchlist
               </Button>
               <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
