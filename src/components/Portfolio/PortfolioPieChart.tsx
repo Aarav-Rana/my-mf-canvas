@@ -7,12 +7,12 @@ interface PortfolioPieChartProps {
 }
 
 const COLORS = [
-  "hsl(231 48% 48%)",
-  "hsl(158 64% 52%)",
-  "hsl(38 92% 50%)",
-  "hsl(271 81% 56%)",
-  "hsl(12 76% 61%)",
-  "hsl(197 71% 73%)",
+  "hsl(231 55% 35%)",
+  "hsl(158 64% 32%)",
+  "hsl(38 85% 38%)",
+  "hsl(271 75% 40%)",
+  "hsl(12 76% 42%)",
+  "hsl(197 65% 45%)",
 ];
 
 export const PortfolioPieChart = ({ holdings }: PortfolioPieChartProps) => {
