@@ -88,7 +88,7 @@ const Index = () => {
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">My Profile</span>
               </Button>
-              <Button variant="outline" className="border-[hsl(var(--header-text))] text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
+              <Button className="bg-[hsl(var(--primary))] text-primary-foreground hover:bg-[hsl(var(--primary))]/90 shadow-lg">
                 Sign In / Register
               </Button>
               <Button className="bg-[hsl(var(--accent-dark))] text-accent-dark-foreground hover:bg-[hsl(var(--accent-dark))]/90">
@@ -102,10 +102,10 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Portfolio Section */}
-        <section>
+        <section className="bg-card rounded-2xl p-6 md:p-8 shadow-lg">
           <div className="mb-6">
-            <h2 className="text-3xl font-bold text-foreground mb-2">Portfolio Overview</h2>
-            <p className="text-muted-foreground">Track your mutual fund investments in real-time</p>
+            <h2 className="text-3xl font-bold text-card-foreground mb-2">Portfolio Overview</h2>
+            <p className="text-card-foreground/70">Track your mutual fund investments in real-time</p>
           </div>
 
           {isLoading ? (
