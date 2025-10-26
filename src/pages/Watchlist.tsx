@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, User, Bell, ArrowLeft, X, Plus, Twitter, Linkedin } from "lucide-react";
+import { TrendingUp, User, Bell, ArrowLeft, X, Plus, Twitter, Linkedin, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -12,6 +12,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useMutualFundsList, useMutualFundDetails } from "@/hooks/useMutualFunds";
+import { toast } from "sonner";
 
 interface WatchlistFund {
   id: string;
@@ -57,9 +68,45 @@ const SAMPLE_WATCHLIST: WatchlistFund[] = [
 const Watchlist = () => {
   const navigate = useNavigate();
   const [watchlistFunds, setWatchlistFunds] = useState<WatchlistFund[]>(SAMPLE_WATCHLIST);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSchemeCode, setSelectedSchemeCode] = useState<string | null>(null);
+
+  const { data: mutualFundsList, isLoading: isLoadingList } = useMutualFundsList();
+  const { data: fundDetails, isLoading: isLoadingDetails } = useMutualFundDetails(selectedSchemeCode || "");
 
   const handleRemoveFromWatchlist = (id: string) => {
     setWatchlistFunds(watchlistFunds.filter((fund) => fund.id !== id));
+    toast.success("Fund removed from watchlist");
+  };
+
+  const filteredFunds = mutualFundsList?.filter((fund) =>
+    fund.schemeName.toLowerCase().includes(searchQuery.toLowerCase())
+  ).slice(0, 10);
+
+  const handleAddToWatchlist = () => {
+    if (!fundDetails || !selectedSchemeCode) return;
+
+    const latestNAV = parseFloat(fundDetails.data[0]?.nav || "0");
+    const previousNAV = parseFloat(fundDetails.data[1]?.nav || "0");
+    const change = latestNAV - previousNAV;
+    const changePercentage = previousNAV > 0 ? (change / previousNAV) * 100 : 0;
+
+    const newFund: WatchlistFund = {
+      id: Date.now().toString(),
+      schemeName: fundDetails.meta.scheme_name,
+      schemeCode: fundDetails.meta.scheme_code,
+      currentNAV: latestNAV,
+      change: change,
+      changePercentage: changePercentage,
+      category: fundDetails.meta.scheme_category,
+    };
+
+    setWatchlistFunds([...watchlistFunds, newFund]);
+    setIsDialogOpen(false);
+    setSearchQuery("");
+    setSelectedSchemeCode(null);
+    toast.success("Fund added to watchlist");
   };
 
   return (
@@ -121,20 +168,138 @@ const Watchlist = () => {
               <h2 className="text-3xl font-bold text-card-foreground mb-2">My Watchlist</h2>
               <p className="text-card-foreground/70">Track mutual funds you're interested in</p>
             </div>
-            <Button className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Fund
-            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Fund
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Add Fund to Watchlist</DialogTitle>
+                  <DialogDescription>
+                    Search and select a mutual fund to add to your watchlist
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search mutual funds..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                  <div className="max-h-[300px] overflow-y-auto space-y-2">
+                    {isLoadingList ? (
+                      <p className="text-center text-muted-foreground py-4">Loading funds...</p>
+                    ) : filteredFunds && filteredFunds.length > 0 ? (
+                      filteredFunds.map((fund) => (
+                        <div
+                          key={fund.schemeCode}
+                          onClick={() => setSelectedSchemeCode(fund.schemeCode)}
+                          className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                            selectedSchemeCode === fund.schemeCode
+                              ? "bg-primary/10 border-primary"
+                              : "border-border hover:bg-secondary/50"
+                          }`}
+                        >
+                          <p className="font-medium text-sm">{fund.schemeName}</p>
+                          <p className="text-xs text-muted-foreground">Code: {fund.schemeCode}</p>
+                        </div>
+                      ))
+                    ) : searchQuery ? (
+                      <p className="text-center text-muted-foreground py-4">No funds found</p>
+                    ) : (
+                      <p className="text-center text-muted-foreground py-4">Start typing to search funds</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex justify-end gap-3">
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleAddToWatchlist}
+                    disabled={!selectedSchemeCode || isLoadingDetails}
+                    className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90"
+                  >
+                    {isLoadingDetails ? "Loading..." : "Add to Watchlist"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {watchlistFunds.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg mb-4">Your watchlist is empty</p>
               <p className="text-muted-foreground/70 mb-6">Start adding mutual funds to track their performance</p>
-              <Button className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Fund
-              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Fund
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px]">
+                  <DialogHeader>
+                    <DialogTitle>Add Fund to Watchlist</DialogTitle>
+                    <DialogDescription>
+                      Search and select a mutual fund to add to your watchlist
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search mutual funds..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                    <div className="max-h-[300px] overflow-y-auto space-y-2">
+                      {isLoadingList ? (
+                        <p className="text-center text-muted-foreground py-4">Loading funds...</p>
+                      ) : filteredFunds && filteredFunds.length > 0 ? (
+                        filteredFunds.map((fund) => (
+                          <div
+                            key={fund.schemeCode}
+                            onClick={() => setSelectedSchemeCode(fund.schemeCode)}
+                            className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                              selectedSchemeCode === fund.schemeCode
+                                ? "bg-primary/10 border-primary"
+                                : "border-border hover:bg-secondary/50"
+                            }`}
+                          >
+                            <p className="font-medium text-sm">{fund.schemeName}</p>
+                            <p className="text-xs text-muted-foreground">Code: {fund.schemeCode}</p>
+                          </div>
+                        ))
+                      ) : searchQuery ? (
+                        <p className="text-center text-muted-foreground py-4">No funds found</p>
+                      ) : (
+                        <p className="text-center text-muted-foreground py-4">Start typing to search funds</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3">
+                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleAddToWatchlist}
+                      disabled={!selectedSchemeCode || isLoadingDetails}
+                      className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90"
+                    >
+                      {isLoadingDetails ? "Loading..." : "Add to Watchlist"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           ) : (
             <div className="overflow-x-auto">
