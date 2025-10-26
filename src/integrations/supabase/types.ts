@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      watchlist: {
+        Row: {
+          category: string
+          change: number
+          change_percentage: number
+          created_at: string
+          current_nav: number
+          id: string
+          scheme_code: string
+          scheme_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          change: number
+          change_percentage: number
+          created_at?: string
+          current_nav: number
+          id?: string
+          scheme_code: string
+          scheme_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          change?: number
+          change_percentage?: number
+          created_at?: string
+          current_nav?: number
+          id?: string
+          scheme_code?: string
+          scheme_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

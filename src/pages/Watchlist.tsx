@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, User, Bell, ArrowLeft, X, Plus, Twitter, Linkedin, Search } from "lucide-react";
+import { TrendingUp, User, Bell, ArrowLeft, X, Plus, Twitter, Linkedin, Search, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -22,62 +22,49 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useMutualFundsList, useMutualFundDetails } from "@/hooks/useMutualFunds";
+import { useWatchlist } from "@/hooks/useWatchlist";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-interface WatchlistFund {
-  id: string;
-  schemeName: string;
-  schemeCode: string;
-  currentNAV: number;
-  change: number;
-  changePercentage: number;
-  category: string;
-}
-
-// Sample watchlist data
-const SAMPLE_WATCHLIST: WatchlistFund[] = [
-  {
-    id: "1",
-    schemeName: "SBI Bluechip Fund",
-    schemeCode: "120503",
-    currentNAV: 67.85,
-    change: 1.25,
-    changePercentage: 1.88,
-    category: "Large Cap",
-  },
-  {
-    id: "2",
-    schemeName: "HDFC Top 100 Fund",
-    schemeCode: "118989",
-    currentNAV: 862.50,
-    change: -3.20,
-    changePercentage: -0.37,
-    category: "Large Cap",
-  },
-  {
-    id: "3",
-    schemeName: "Axis Midcap Fund",
-    schemeCode: "120716",
-    currentNAV: 85.60,
-    change: 2.10,
-    changePercentage: 2.51,
-    category: "Mid Cap",
-  },
-];
 
 const Watchlist = () => {
   const navigate = useNavigate();
-  const [watchlistFunds, setWatchlistFunds] = useState<WatchlistFund[]>(SAMPLE_WATCHLIST);
+  const [userId, setUserId] = useState<string | undefined>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSchemeCode, setSelectedSchemeCode] = useState<string | null>(null);
 
   const { data: mutualFundsList, isLoading: isLoadingList } = useMutualFundsList();
   const { data: fundDetails, isLoading: isLoadingDetails } = useMutualFundDetails(selectedSchemeCode || "");
+  const { watchlist, isLoading: isLoadingWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist(userId);
 
-  const handleRemoveFromWatchlist = (id: string) => {
-    setWatchlistFunds(watchlistFunds.filter((fund) => fund.id !== id));
-    toast.success("Fund removed from watchlist");
+  useEffect(() => {
+    // Check if user is logged in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setUserId(session.user.id);
+      }
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        navigate("/auth");
+      } else if (session) {
+        setUserId(session.user.id);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast.success("Signed out successfully");
   };
 
   const filteredFunds = mutualFundsList?.filter((fund) =>
@@ -92,21 +79,18 @@ const Watchlist = () => {
     const change = latestNAV - previousNAV;
     const changePercentage = previousNAV > 0 ? (change / previousNAV) * 100 : 0;
 
-    const newFund: WatchlistFund = {
-      id: Date.now().toString(),
-      schemeName: fundDetails.meta.scheme_name,
-      schemeCode: fundDetails.meta.scheme_code,
-      currentNAV: latestNAV,
+    addToWatchlist({
+      scheme_code: fundDetails.meta.scheme_code,
+      scheme_name: fundDetails.meta.scheme_name,
+      current_nav: latestNAV,
       change: change,
-      changePercentage: changePercentage,
+      change_percentage: changePercentage,
       category: fundDetails.meta.scheme_category,
-    };
+    });
 
-    setWatchlistFunds([...watchlistFunds, newFund]);
     setIsDialogOpen(false);
     setSearchQuery("");
     setSelectedSchemeCode(null);
-    toast.success("Fund added to watchlist");
   };
 
   return (
@@ -144,15 +128,13 @@ const Watchlist = () => {
               <Button variant="ghost" size="icon" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
                 <Bell className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
-                <User className="h-4 w-4" />
-                <span className="hidden sm:inline">My Profile</span>
-              </Button>
-              <Button className="bg-[hsl(var(--primary))] text-primary-foreground hover:bg-[hsl(var(--primary))]/90 shadow-lg">
-                Sign In / Register
-              </Button>
-              <Button className="bg-[hsl(var(--accent-dark))] text-accent-dark-foreground hover:bg-[hsl(var(--accent-dark))]/90">
-                Membership
+              <Button 
+                variant="ghost" 
+                onClick={handleSignOut}
+                className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Sign Out</span>
               </Button>
             </div>
           </div>
@@ -233,7 +215,11 @@ const Watchlist = () => {
             </Dialog>
           </div>
 
-          {watchlistFunds.length === 0 ? (
+          {isLoadingWatchlist ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">Loading watchlist...</p>
+            </div>
+          ) : watchlist.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg mb-4">Your watchlist is empty</p>
               <p className="text-muted-foreground/70 mb-6">Start adding mutual funds to track their performance</p>
@@ -315,12 +301,12 @@ const Watchlist = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {watchlistFunds.map((fund) => (
+                  {watchlist.map((fund) => (
                     <TableRow key={fund.id} className="border-border/30 hover:bg-secondary/30">
                       <TableCell className="font-medium text-card-foreground">
                         <div>
-                          <div className="font-semibold">{fund.schemeName}</div>
-                          <div className="text-xs text-muted-foreground">Code: {fund.schemeCode}</div>
+                          <div className="font-semibold">{fund.scheme_name}</div>
+                          <div className="text-xs text-muted-foreground">Code: {fund.scheme_code}</div>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -329,19 +315,19 @@ const Watchlist = () => {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right font-semibold text-card-foreground">
-                        ₹{fund.currentNAV.toFixed(2)}
+                        ₹{Number(fund.current_nav).toFixed(2)}
                       </TableCell>
-                      <TableCell className={`text-right font-medium ${fund.change >= 0 ? "text-accent" : "text-destructive"}`}>
-                        {fund.change >= 0 ? "+" : ""}₹{fund.change.toFixed(2)}
+                      <TableCell className={`text-right font-medium ${Number(fund.change) >= 0 ? "text-accent" : "text-destructive"}`}>
+                        {Number(fund.change) >= 0 ? "+" : ""}₹{Number(fund.change).toFixed(2)}
                       </TableCell>
-                      <TableCell className={`text-right font-medium ${fund.changePercentage >= 0 ? "text-accent" : "text-destructive"}`}>
-                        {fund.changePercentage >= 0 ? "+" : ""}{fund.changePercentage.toFixed(2)}%
+                      <TableCell className={`text-right font-medium ${Number(fund.change_percentage) >= 0 ? "text-accent" : "text-destructive"}`}>
+                        {Number(fund.change_percentage) >= 0 ? "+" : ""}{Number(fund.change_percentage).toFixed(2)}%
                       </TableCell>
                       <TableCell className="text-center">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleRemoveFromWatchlist(fund.id)}
+                          onClick={() => removeFromWatchlist(fund.id)}
                           className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         >
                           <X className="h-4 w-4" />
