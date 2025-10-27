@@ -6,9 +6,10 @@ import { useMultipleFundDetails } from "@/hooks/useMutualFunds";
 import { PortfolioHolding } from "@/types/mutualfund";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, User, Bell, Twitter, Linkedin } from "lucide-react";
+import { TrendingUp, User, Bell, Twitter, Linkedin, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // Sample portfolio holdings with popular Indian mutual funds
 const SAMPLE_HOLDINGS = [
@@ -22,6 +23,7 @@ const SAMPLE_HOLDINGS = [
 const Index = () => {
   const navigate = useNavigate();
   const [portfolioHoldings, setPortfolioHoldings] = useState<PortfolioHolding[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   const schemeCodes = SAMPLE_HOLDINGS.map(h => h.schemeCode);
   const { data: fundsData, isLoading } = useMultipleFundDetails(schemeCodes);
@@ -31,6 +33,8 @@ const Index = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         navigate("/auth");
+      } else {
+        setIsLoggedIn(true);
       }
     });
 
@@ -39,12 +43,20 @@ const Index = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
+        setIsLoggedIn(false);
         navigate("/auth");
+      } else if (session) {
+        setIsLoggedIn(true);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast.success("Signed out successfully");
+  };
 
   useEffect(() => {
     if (fundsData && fundsData.length > 0) {
@@ -111,13 +123,29 @@ const Index = () => {
               <Button variant="ghost" size="icon" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
                 <Bell className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
-                <User className="h-4 w-4" />
-                <span className="hidden sm:inline">My Profile</span>
-              </Button>
-              <Button className="bg-[hsl(var(--primary))] text-primary-foreground hover:bg-[hsl(var(--primary))]/90 shadow-lg">
-                Sign In / Register
-              </Button>
+              {isLoggedIn ? (
+                <>
+                  <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
+                    <User className="h-4 w-4" />
+                    <span className="hidden sm:inline">My Profile</span>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleSignOut}
+                    className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="hidden sm:inline">Sign Out</span>
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  className="bg-[hsl(var(--primary))] text-primary-foreground hover:bg-[hsl(var(--primary))]/90 shadow-lg"
+                  onClick={() => navigate("/auth")}
+                >
+                  Sign In / Register
+                </Button>
+              )}
               <Button className="bg-[hsl(var(--accent-dark))] text-accent-dark-foreground hover:bg-[hsl(var(--accent-dark))]/90">
                 Membership
               </Button>
