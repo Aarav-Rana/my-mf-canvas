@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Wallet, DollarSign } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, IndianRupee } from "lucide-react";
 
 interface PortfolioSummaryCardsProps {
   totalInvestment: number;
@@ -37,7 +37,7 @@ export const PortfolioSummaryCards = ({
           <CardTitle className="text-sm font-medium text-muted-foreground">
             Current Value
           </CardTitle>
-          <DollarSign className="h-5 w-5 text-primary" />
+          <IndianRupee className="h-5 w-5 text-primary" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-foreground">
