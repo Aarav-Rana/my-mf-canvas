@@ -114,7 +114,11 @@ const Index = () => {
               >
                 Watchlist
               </Button>
-              <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
+              <Button 
+                variant="ghost" 
+                className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
+                onClick={() => navigate("/markets")}
+              >
                 Markets
               </Button>
               <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
