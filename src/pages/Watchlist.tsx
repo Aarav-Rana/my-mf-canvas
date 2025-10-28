@@ -1,17 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, User, Bell, ArrowLeft, X, Plus, Twitter, Linkedin, Search, LogOut } from "lucide-react";
+import { TrendingUp, Bell, ArrowLeft, LogOut, Search, Plus, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -22,9 +12,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useMutualFundsList, useMutualFundDetails } from "@/hooks/useMutualFunds";
-import { useWatchlist } from "@/hooks/useWatchlist";
+import { useWatchlist, WatchlistItem } from "@/hooks/useWatchlist";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { WatchlistHeader } from "@/components/Watchlist/WatchlistHeader";
+import { WatchlistTreeTable } from "@/components/Watchlist/WatchlistTreeTable";
+import { WatchlistCharts } from "@/components/Watchlist/WatchlistCharts";
+import { WatchlistTools } from "@/components/Watchlist/WatchlistTools";
+import { WatchlistInspector } from "@/components/Watchlist/WatchlistInspector";
 
 
 const Watchlist = () => {
@@ -33,6 +28,7 @@ const Watchlist = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSchemeCode, setSelectedSchemeCode] = useState<string | null>(null);
+  const [hoveredItem, setHoveredItem] = useState<WatchlistItem | null>(null);
 
   const { data: mutualFundsList, isLoading: isLoadingList } = useMutualFundsList();
   const { data: fundDetails, isLoading: isLoadingDetails } = useMutualFundDetails(selectedSchemeCode || "");
@@ -93,50 +89,45 @@ const Watchlist = () => {
     setSelectedSchemeCode(null);
   };
 
+  const totalValue = 1240000; // ₹12.4L
+  const totalReturns = 225000;
+  const returnsPercentage = 18.2;
+
+  const handleExport = () => {
+    toast.success("Exporting watchlist data...");
+  };
+
+  const handleRefresh = () => {
+    toast.success("Refreshing data...");
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/10 to-background">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border/20 bg-[hsl(var(--header-bg))] backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-6">
+      <header className="border-b border-border bg-card backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-[hsl(var(--header-text))]" />
+                <TrendingUp className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-[hsl(var(--header-text))]">
-                  FundTracker
-                </h1>
-                <p className="text-sm text-[hsl(var(--header-text))]/70">Indian Mutual Funds Portfolio</p>
+                <h1 className="text-2xl font-bold">FundTracker</h1>
+                <p className="text-sm text-muted-foreground">Indian Mutual Funds Portfolio</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button 
-                variant="ghost" 
-                className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
-                onClick={() => navigate("/")}
-              >
+              <Button variant="ghost" onClick={() => navigate("/")}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Home
               </Button>
-              <Button 
-                variant="ghost" 
-                className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
-                onClick={() => navigate("/markets")}
-              >
+              <Button variant="ghost" onClick={() => navigate("/markets")}>
                 Markets
               </Button>
-              <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
-                News
-              </Button>
-              <Button variant="ghost" size="icon" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
+              <Button variant="ghost" size="icon">
                 <Bell className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                onClick={handleSignOut}
-                className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
-              >
+              <Button variant="ghost" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Sign Out</span>
               </Button>
@@ -146,266 +137,114 @@ const Watchlist = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 space-y-8">
-        {/* Watchlist Section */}
-        <section className="bg-card rounded-2xl p-6 md:p-8 shadow-lg">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-card-foreground mb-2">My Watchlist</h2>
-              <p className="text-card-foreground/70">Track mutual funds you're interested in</p>
-            </div>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Fund
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px]">
-                <DialogHeader>
-                  <DialogTitle>Add Fund to Watchlist</DialogTitle>
-                  <DialogDescription>
-                    Search and select a mutual fund to add to your watchlist
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search mutual funds..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9"
-                    />
-                  </div>
-                  <div className="max-h-[300px] overflow-y-auto space-y-2">
-                    {isLoadingList ? (
-                      <p className="text-center text-muted-foreground py-4">Loading funds...</p>
-                    ) : filteredFunds && filteredFunds.length > 0 ? (
-                      filteredFunds.map((fund) => (
-                        <div
-                          key={fund.schemeCode}
-                          onClick={() => setSelectedSchemeCode(fund.schemeCode)}
-                          className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                            selectedSchemeCode === fund.schemeCode
-                              ? "bg-primary/10 border-primary"
-                              : "border-border hover:bg-secondary/50"
-                          }`}
-                        >
-                          <p className="font-medium text-sm">{fund.schemeName}</p>
-                          <p className="text-xs text-muted-foreground">Code: {fund.schemeCode}</p>
-                        </div>
-                      ))
-                    ) : searchQuery ? (
-                      <p className="text-center text-muted-foreground py-4">No funds found</p>
-                    ) : (
-                      <p className="text-center text-muted-foreground py-4">Start typing to search funds</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex justify-end gap-3">
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleAddToWatchlist}
-                    disabled={!selectedSchemeCode || isLoadingDetails}
-                    className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90"
-                  >
-                    {isLoadingDetails ? "Loading..." : "Add to Watchlist"}
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+      <main className="container mx-auto p-4">
+        <div className="flex gap-4">
+          {/* Left: Watchlist Panel */}
+          <div className="flex-1">
+            <div className="bg-card rounded-lg border border-border shadow-lg overflow-hidden">
+              <WatchlistHeader
+                portfolioName="Equity Master"
+                totalValue={totalValue}
+                totalReturns={totalReturns}
+                returnsPercentage={returnsPercentage}
+                onAddNew={() => setIsDialogOpen(true)}
+                onExport={handleExport}
+                onRefresh={handleRefresh}
+              />
 
-          {isLoadingWatchlist ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">Loading watchlist...</p>
-            </div>
-          ) : watchlist.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg mb-4">Your watchlist is empty</p>
-              <p className="text-muted-foreground/70 mb-6">Start adding mutual funds to track their performance</p>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90">
+              {isLoadingWatchlist ? (
+                <div className="p-8 text-center">
+                  <p className="text-muted-foreground">Loading watchlist...</p>
+                </div>
+              ) : watchlist.length === 0 ? (
+                <div className="p-8 text-center">
+                  <p className="text-muted-foreground mb-4">Your watchlist is empty</p>
+                  <Button onClick={() => setIsDialogOpen(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Your First Fund
                   </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px]">
-                  <DialogHeader>
-                    <DialogTitle>Add Fund to Watchlist</DialogTitle>
-                    <DialogDescription>
-                      Search and select a mutual fund to add to your watchlist
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search mutual funds..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-9"
-                      />
-                    </div>
-                    <div className="max-h-[300px] overflow-y-auto space-y-2">
-                      {isLoadingList ? (
-                        <p className="text-center text-muted-foreground py-4">Loading funds...</p>
-                      ) : filteredFunds && filteredFunds.length > 0 ? (
-                        filteredFunds.map((fund) => (
-                          <div
-                            key={fund.schemeCode}
-                            onClick={() => setSelectedSchemeCode(fund.schemeCode)}
-                            className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                              selectedSchemeCode === fund.schemeCode
-                                ? "bg-primary/10 border-primary"
-                                : "border-border hover:bg-secondary/50"
-                            }`}
-                          >
-                            <p className="font-medium text-sm">{fund.schemeName}</p>
-                            <p className="text-xs text-muted-foreground">Code: {fund.schemeCode}</p>
-                          </div>
-                        ))
-                      ) : searchQuery ? (
-                        <p className="text-center text-muted-foreground py-4">No funds found</p>
-                      ) : (
-                        <p className="text-center text-muted-foreground py-4">Start typing to search funds</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-3">
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleAddToWatchlist}
-                      disabled={!selectedSchemeCode || isLoadingDetails}
-                      className="bg-[hsl(var(--accent))] text-accent-foreground hover:bg-[hsl(var(--accent))]/90"
-                    >
-                      {isLoadingDetails ? "Loading..." : "Add to Watchlist"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border/50">
-                    <TableHead className="text-card-foreground font-semibold">Scheme Name</TableHead>
-                    <TableHead className="text-card-foreground font-semibold">Category</TableHead>
-                    <TableHead className="text-card-foreground font-semibold text-right">Current NAV</TableHead>
-                    <TableHead className="text-card-foreground font-semibold text-right">Change</TableHead>
-                    <TableHead className="text-card-foreground font-semibold text-right">Change %</TableHead>
-                    <TableHead className="text-card-foreground font-semibold text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {watchlist.map((fund) => (
-                    <TableRow key={fund.id} className="border-border/30 hover:bg-secondary/30">
-                      <TableCell className="font-medium text-card-foreground">
-                        <div>
-                          <div className="font-semibold">{fund.scheme_name}</div>
-                          <div className="text-xs text-muted-foreground">Code: {fund.scheme_code}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">
-                          {fund.category}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-semibold text-card-foreground">
-                        ₹{Number(fund.current_nav).toFixed(2)}
-                      </TableCell>
-                      <TableCell className={`text-right font-medium ${Number(fund.change) >= 0 ? "text-accent" : "text-destructive"}`}>
-                        {Number(fund.change) >= 0 ? "+" : ""}₹{Number(fund.change).toFixed(2)}
-                      </TableCell>
-                      <TableCell className={`text-right font-medium ${Number(fund.change_percentage) >= 0 ? "text-accent" : "text-destructive"}`}>
-                        {Number(fund.change_percentage) >= 0 ? "+" : ""}{Number(fund.change_percentage).toFixed(2)}%
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFromWatchlist(fund.id)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </section>
-
-        {/* Info Card */}
-        <Card className="border-border/50 bg-gradient-to-br from-primary/10 to-accent/10">
-          <CardHeader>
-            <CardTitle className="text-lg text-card-foreground">Track Performance & Get Smart Alerts</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-card-foreground/70">
-              Monitor NAV changes and performance metrics of your watchlisted funds in real-time
-            </p>
-            <p className="text-sm text-card-foreground/70">
-              Get notified when your watchlisted funds reach target NAV or show significant changes
-            </p>
-          </CardContent>
-        </Card>
-      </main>
-
-      {/* Footer */}
-      <footer className="mt-12 bg-[hsl(var(--footer-bg))] text-white">
-        <div className="container mx-auto px-4 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {/* About Us Section */}
-            <div>
-              <h3 className="font-bold text-lg mb-3">About Us</h3>
-              <p className="text-sm leading-relaxed opacity-90">
-                We help investors make informed decisions with comprehensive portfolio tracking and market insights.
-              </p>
-            </div>
-            
-            {/* Products Section */}
-            <div>
-              <h3 className="font-bold text-lg mb-3">Products</h3>
-              <ul className="space-y-2 text-sm">
-                <li className="hover:underline cursor-pointer opacity-90 hover:opacity-100">Portfolio Management</li>
-                <li className="hover:underline cursor-pointer opacity-90 hover:opacity-100">Tracking</li>
-                <li className="hover:underline cursor-pointer opacity-90 hover:opacity-100">Investment Advising</li>
-              </ul>
-            </div>
-            
-            {/* Contact Section */}
-            <div>
-              <h3 className="font-bold text-lg mb-3">Contact</h3>
-              <div className="space-y-2 text-sm opacity-90">
-                <p>Email: contact@fundtracker.com</p>
-                <p>Phone: +91 98765 43210</p>
-                <div className="flex gap-3 mt-3">
-                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 transition-opacity">
-                    <Twitter className="h-5 w-5" />
-                  </a>
-                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 transition-opacity">
-                    <Linkedin className="h-5 w-5" />
-                  </a>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <WatchlistTreeTable
+                    watchlist={watchlist}
+                    onRemove={removeFromWatchlist}
+                    onHover={setHoveredItem}
+                  />
+                  <WatchlistCharts watchlist={watchlist} />
+                  <WatchlistTools />
+                </>
+              )}
             </div>
           </div>
-          
-          <div className="pt-6 border-t border-white/20 text-center text-sm opacity-75">
-            <p>Data provided by MFAPI • Updated every 5 minutes</p>
+
+          {/* Right: Inspector Panel */}
+          <div className="w-80 sticky top-20 h-fit">
+            <WatchlistInspector
+              selectedItem={hoveredItem}
+              onClose={() => setHoveredItem(null)}
+            />
           </div>
         </div>
-      </footer>
+      </main>
+
+      {/* Add Fund Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add Fund to Watchlist</DialogTitle>
+            <DialogDescription>
+              Search and select a mutual fund to add to your watchlist
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search mutual funds..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <div className="max-h-[300px] overflow-y-auto space-y-2">
+              {isLoadingList ? (
+                <p className="text-center text-muted-foreground py-4">Loading funds...</p>
+              ) : filteredFunds && filteredFunds.length > 0 ? (
+                filteredFunds.map((fund) => (
+                  <div
+                    key={fund.schemeCode}
+                    onClick={() => setSelectedSchemeCode(fund.schemeCode)}
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                      selectedSchemeCode === fund.schemeCode
+                        ? "bg-primary/10 border-primary"
+                        : "border-border hover:bg-secondary/50"
+                    }`}
+                  >
+                    <p className="font-medium text-sm">{fund.schemeName}</p>
+                    <p className="text-xs text-muted-foreground">Code: {fund.schemeCode}</p>
+                  </div>
+                ))
+              ) : searchQuery ? (
+                <p className="text-center text-muted-foreground py-4">No funds found</p>
+              ) : (
+                <p className="text-center text-muted-foreground py-4">Start typing to search funds</p>
+              )}
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddToWatchlist}
+              disabled={!selectedSchemeCode || isLoadingDetails}
+            >
+              {isLoadingDetails ? "Loading..." : "Add to Watchlist"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
