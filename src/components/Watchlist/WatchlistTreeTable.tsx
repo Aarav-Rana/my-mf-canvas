@@ -13,9 +13,10 @@ interface WatchlistTreeTableProps {
   watchlist: WatchlistItem[];
   onRemove: (id: string) => void;
   onHover: (item: WatchlistItem | null) => void;
+  onSelect: (item: WatchlistItem) => void;
 }
 
-export const WatchlistTreeTable = ({ watchlist, onRemove, onHover }: WatchlistTreeTableProps) => {
+export const WatchlistTreeTable = ({ watchlist, onRemove, onHover, onSelect }: WatchlistTreeTableProps) => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const toggleExpand = (id: string) => {
@@ -80,6 +81,7 @@ export const WatchlistTreeTable = ({ watchlist, onRemove, onHover }: WatchlistTr
                     className="border-b border-border/50 hover:bg-secondary/50 cursor-pointer transition-colors"
                     onMouseEnter={() => onHover(item)}
                     onMouseLeave={() => onHover(null)}
+                    onClick={() => onSelect(item)}
                   >
                     <td className="p-3">
                       <div className="flex items-center gap-2">

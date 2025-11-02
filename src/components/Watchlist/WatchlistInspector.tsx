@@ -7,9 +7,10 @@ import { WatchlistItem } from "@/hooks/useWatchlist";
 interface WatchlistInspectorProps {
   selectedItem: WatchlistItem | null;
   onClose: () => void;
+  onRemove?: (id: string) => void;
 }
 
-export const WatchlistInspector = ({ selectedItem, onClose }: WatchlistInspectorProps) => {
+export const WatchlistInspector = ({ selectedItem, onClose, onRemove }: WatchlistInspectorProps) => {
   if (!selectedItem) {
     return (
       <Card className="w-80 h-fit">
@@ -107,6 +108,16 @@ export const WatchlistInspector = ({ selectedItem, onClose }: WatchlistInspector
           <Button variant="outline" className="w-full" size="sm">
             View Details
           </Button>
+          {onRemove && (
+            <Button 
+              variant="destructive" 
+              className="w-full" 
+              size="sm"
+              onClick={() => onRemove(selectedItem.id)}
+            >
+              Remove Fund
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

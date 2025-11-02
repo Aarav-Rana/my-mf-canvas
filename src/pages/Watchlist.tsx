@@ -29,6 +29,7 @@ const Watchlist = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSchemeCode, setSelectedSchemeCode] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<WatchlistItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<WatchlistItem | null>(null);
 
   const { data: mutualFundsList, isLoading: isLoadingList } = useMutualFundsList();
   const { data: fundDetails, isLoading: isLoadingDetails } = useMutualFundDetails(selectedSchemeCode || "");
@@ -170,6 +171,7 @@ const Watchlist = () => {
                     watchlist={watchlist}
                     onRemove={removeFromWatchlist}
                     onHover={setHoveredItem}
+                    onSelect={setSelectedItem}
                   />
                   <WatchlistCharts watchlist={watchlist} />
                   <WatchlistTools />
@@ -181,8 +183,12 @@ const Watchlist = () => {
           {/* Right: Inspector Panel */}
           <div className="w-80 sticky top-20 h-fit">
             <WatchlistInspector
-              selectedItem={hoveredItem}
-              onClose={() => setHoveredItem(null)}
+              selectedItem={selectedItem || hoveredItem}
+              onClose={() => setSelectedItem(null)}
+              onRemove={(id) => {
+                removeFromWatchlist(id);
+                setSelectedItem(null);
+              }}
             />
           </div>
         </div>
