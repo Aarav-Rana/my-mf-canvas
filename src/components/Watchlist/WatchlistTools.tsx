@@ -2,17 +2,35 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, BarChart3, Target } from "lucide-react";
 
-export const WatchlistTools = () => {
+interface WatchlistToolsProps {
+  onCompare: () => void;
+  onOverlap: () => void;
+  selectedCount: number;
+}
+
+export const WatchlistTools = ({ onCompare, onOverlap, selectedCount }: WatchlistToolsProps) => {
   return (
     <div className="flex items-center justify-between p-4 border-t border-border bg-secondary/20">
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={onCompare}
+          disabled={selectedCount < 2}
+        >
           <Search className="h-4 w-4 mr-2" />
           Compare
-          <Badge variant="secondary" className="ml-2">2</Badge>
+          {selectedCount > 0 && (
+            <Badge variant="secondary" className="ml-2">{selectedCount}</Badge>
+          )}
         </Button>
         
-        <Button variant="outline" size="sm">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={onOverlap}
+          disabled={selectedCount < 2}
+        >
           <BarChart3 className="h-4 w-4 mr-2" />
           Overlap Analysis
         </Button>

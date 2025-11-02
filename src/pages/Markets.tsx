@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Bell, User, LogOut, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { ArrowRight } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Header } from "@/components/shared/Header";
 import { HeroDashboard } from "@/components/Markets/HeroDashboard";
 import { MarketMovers } from "@/components/Markets/MarketMovers";
 import { SectorSnapshot } from "@/components/Markets/SectorSnapshot";
@@ -15,90 +14,20 @@ import { EducationalCards } from "@/components/Markets/EducationalCards";
 
 const Markets = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate("/auth");
-      } else {
-        setIsLoggedIn(true);
-      }
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT") {
-        setIsLoggedIn(false);
-        navigate("/auth");
-      } else if (session) {
-        setIsLoggedIn(true);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast.success("Signed out successfully");
-  };
+    // Scroll to top gainers if coming from CTA
+    if (location.state?.scrollTo === 'topGainers') {
+      setTimeout(() => {
+        document.getElementById('market-movers')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [location]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--hero-gradient-from))] via-[hsl(var(--hero-gradient-via))] to-[hsl(var(--hero-gradient-to))]">
-      {/* Header */}
-      <header className="bg-[hsl(var(--header-bg))] shadow-lg border-b border-[hsl(var(--header-border))]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-[hsl(var(--header-text))]">MutualFund Tracker</h1>
-              <nav className="hidden md:flex space-x-4">
-                <Button variant="ghost" onClick={() => navigate("/")} className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
-                  Portfolio
-                </Button>
-                <Button variant="ghost" onClick={() => navigate("/watchlist")} className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
-                  Watchlist
-                </Button>
-                <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10 font-semibold">
-                  Markets
-                </Button>
-              </nav>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
-                <Bell className="h-4 w-4" />
-              </Button>
-              {isLoggedIn ? (
-                <>
-                  <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
-                    <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">My Profile</span>
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    onClick={handleSignOut}
-                    className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span className="hidden sm:inline">Sign Out</span>
-                  </Button>
-                </>
-              ) : (
-                <Button 
-                  className="bg-[hsl(var(--primary))] text-primary-foreground hover:bg-[hsl(var(--primary))]/90 shadow-lg"
-                  onClick={() => navigate("/auth")}
-                >
-                  Sign In / Register
-                </Button>
-              )}
-              <Button className="bg-[hsl(var(--accent-dark))] text-accent-dark-foreground hover:bg-[hsl(var(--accent-dark))]/90">
-                Membership
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -144,7 +73,7 @@ const Markets = () => {
                 <Button 
                   size="lg"
                   className="bg-accent text-accent-foreground hover:bg-accent/90"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/markets", { state: { scrollTo: 'topGainers' } })}
                 >
                   View Top Funds
                   <ArrowRight className="ml-2 h-5 w-5" />

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Bell, ArrowLeft, LogOut, Search, Plus, X } from "lucide-react";
+import { TrendingUp, Search, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Header } from "@/components/shared/Header";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,8 @@ import { WatchlistTreeTable } from "@/components/Watchlist/WatchlistTreeTable";
 import { WatchlistCharts } from "@/components/Watchlist/WatchlistCharts";
 import { WatchlistTools } from "@/components/Watchlist/WatchlistTools";
 import { WatchlistInspector } from "@/components/Watchlist/WatchlistInspector";
+import { CompareDialog } from "@/components/Watchlist/CompareDialog";
+import { OverlapDialog } from "@/components/Watchlist/OverlapDialog";
 
 
 const Watchlist = () => {
@@ -30,6 +33,9 @@ const Watchlist = () => {
   const [selectedSchemeCode, setSelectedSchemeCode] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<WatchlistItem | null>(null);
   const [selectedItem, setSelectedItem] = useState<WatchlistItem | null>(null);
+  const [compareDialogOpen, setCompareDialogOpen] = useState(false);
+  const [overlapDialogOpen, setOverlapDialogOpen] = useState(false);
+  const [selectedForCompare, setSelectedForCompare] = useState<WatchlistItem[]>([]);
 
   const { data: mutualFundsList, isLoading: isLoadingList } = useMutualFundsList();
   const { data: fundDetails, isLoading: isLoadingDetails } = useMutualFundDetails(selectedSchemeCode || "");
@@ -102,40 +108,20 @@ const Watchlist = () => {
     toast.success("Refreshing data...");
   };
 
+  const handleToggleCompare = (item: WatchlistItem) => {
+    setSelectedForCompare((prev) => {
+      const exists = prev.find((f) => f.id === item.id);
+      if (exists) {
+        return prev.filter((f) => f.id !== item.id);
+      } else {
+        return [...prev, item];
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold">FundTracker</h1>
-                <p className="text-sm text-muted-foreground">Indian Mutual Funds Portfolio</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" onClick={() => navigate("/")}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Home
-              </Button>
-              <Button variant="ghost" onClick={() => navigate("/markets")}>
-                Markets
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Bell className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Sign Out</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="container mx-auto p-4">
@@ -172,9 +158,16 @@ const Watchlist = () => {
                     onRemove={removeFromWatchlist}
                     onHover={setHoveredItem}
                     onSelect={setSelectedItem}
+                    onToggleCompare={handleToggleCompare}
+                    selectedForCompare={selectedForCompare}
+                    onAddToWatchlist={addToWatchlist}
                   />
                   <WatchlistCharts watchlist={watchlist} />
-                  <WatchlistTools />
+                  <WatchlistTools 
+                    onCompare={() => setCompareDialogOpen(true)}
+                    onOverlap={() => setOverlapDialogOpen(true)}
+                    selectedCount={selectedForCompare.length}
+                  />
                 </>
               )}
             </div>
@@ -251,6 +244,20 @@ const Watchlist = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Compare Dialog */}
+      <CompareDialog
+        open={compareDialogOpen}
+        onOpenChange={setCompareDialogOpen}
+        funds={selectedForCompare}
+      />
+
+      {/* Overlap Dialog */}
+      <OverlapDialog
+        open={overlapDialogOpen}
+        onOpenChange={setOverlapDialogOpen}
+        funds={selectedForCompare}
+      />
     </div>
   );
 };

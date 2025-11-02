@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TrendingUp, TrendingDown, ChevronRight, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { WatchlistItem } from "@/hooks/useWatchlist";
 import {
   Tooltip,
@@ -8,15 +9,32 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 interface WatchlistTreeTableProps {
   watchlist: WatchlistItem[];
   onRemove: (id: string) => void;
   onHover: (item: WatchlistItem | null) => void;
   onSelect: (item: WatchlistItem) => void;
+  onToggleCompare: (item: WatchlistItem) => void;
+  selectedForCompare: WatchlistItem[];
+  onAddToWatchlist: (item: Omit<WatchlistItem, "id">) => void;
 }
 
-export const WatchlistTreeTable = ({ watchlist, onRemove, onHover, onSelect }: WatchlistTreeTableProps) => {
+export const WatchlistTreeTable = ({ 
+  watchlist, 
+  onRemove, 
+  onHover, 
+  onSelect, 
+  onToggleCompare, 
+  selectedForCompare,
+  onAddToWatchlist 
+}: WatchlistTreeTableProps) => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const toggleExpand = (id: string) => {
@@ -73,34 +91,46 @@ export const WatchlistTreeTable = ({ watchlist, onRemove, onHover, onSelect }: W
           </tr>
         </thead>
         <tbody>
-          {watchlist.map((item) => (
-            <TooltipProvider key={item.id}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <tr
-                    className="border-b border-border/50 hover:bg-secondary/50 cursor-pointer transition-colors"
-                    onMouseEnter={() => onHover(item)}
-                    onMouseLeave={() => onHover(null)}
-                    onClick={() => onSelect(item)}
-                  >
-                    <td className="p-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => toggleExpand(item.id)}
-                          className="text-muted-foreground hover:text-foreground"
+          {watchlist.map((item) => {
+            const isSelected = selectedForCompare.some((f) => f.id === item.id);
+            return (
+              <ContextMenu key={item.id}>
+                <ContextMenuTrigger asChild>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <tr
+                          className="border-b border-border/50 hover:bg-secondary/50 cursor-pointer transition-colors"
+                          onMouseEnter={() => onHover(item)}
+                          onMouseLeave={() => onHover(null)}
+                          onClick={() => onSelect(item)}
                         >
-                          {expandedItems.has(item.id) ? (
-                            <ChevronDown className="h-3 w-3" />
-                          ) : (
-                            <ChevronRight className="h-3 w-3" />
-                          )}
-                        </button>
-                        <div>
-                          <div className="font-medium text-sm">{item.scheme_name.substring(0, 30)}...</div>
-                          <Badge variant="outline" className="text-xs mt-1">{item.category}</Badge>
-                        </div>
-                      </div>
-                    </td>
+                          <td className="p-3">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                checked={isSelected}
+                                onCheckedChange={() => onToggleCompare(item)}
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleExpand(item.id);
+                                }}
+                                className="text-muted-foreground hover:text-foreground"
+                              >
+                                {expandedItems.has(item.id) ? (
+                                  <ChevronDown className="h-3 w-3" />
+                                ) : (
+                                  <ChevronRight className="h-3 w-3" />
+                                )}
+                              </button>
+                              <div>
+                                <div className="font-medium text-sm">{item.scheme_name.substring(0, 30)}...</div>
+                                <Badge variant="outline" className="text-xs mt-1">{item.category}</Badge>
+                              </div>
+                            </div>
+                          </td>
                     <td className="text-right p-3 font-semibold">
                       ₹{Number(item.current_nav).toFixed(2)}
                     </td>
@@ -127,31 +157,42 @@ export const WatchlistTreeTable = ({ watchlist, onRemove, onHover, onSelect }: W
                     <td className="text-right p-3 font-semibold">
                       ₹{((Number(item.current_nav) * 1000) / 100000).toFixed(1)}L
                     </td>
-                    <td className="text-center p-3">
-                      <Sparkline data={generateSparklineData()} />
-                    </td>
-                  </tr>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="max-w-xs">
-                  <div className="space-y-2">
-                    <p className="font-semibold">{item.scheme_name}</p>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <p className="text-muted-foreground">NAV</p>
-                        <p className="font-semibold">₹{Number(item.current_nav).toFixed(2)}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Change</p>
-                        <p className={Number(item.change) >= 0 ? 'text-success' : 'text-destructive'}>
-                          {Number(item.change) >= 0 ? '+' : ''}₹{Number(item.change).toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ))}
+                          <td className="text-center p-3">
+                            <Sparkline data={generateSparklineData()} />
+                          </td>
+                        </tr>
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="max-w-xs">
+                        <div className="space-y-2">
+                          <p className="font-semibold">{item.scheme_name}</p>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <p className="text-muted-foreground">NAV</p>
+                              <p className="font-semibold">₹{Number(item.current_nav).toFixed(2)}</p>
+                            </div>
+                            <div>
+                              <p className="text-muted-foreground">Change</p>
+                              <p className={Number(item.change) >= 0 ? 'text-success' : 'text-destructive'}>
+                                {Number(item.change) >= 0 ? '+' : ''}₹{Number(item.change).toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </ContextMenuTrigger>
+                <ContextMenuContent>
+                  <ContextMenuItem onClick={() => onToggleCompare(item)}>
+                    {isSelected ? "Remove from Compare" : "Add to Compare"}
+                  </ContextMenuItem>
+                  <ContextMenuItem onClick={() => onRemove(item.id)}>
+                    Remove from Watchlist
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -52,7 +52,7 @@ export const MarketMovers = () => {
   );
 
   return (
-    <Card>
+    <Card id="market-movers">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Activity className="h-5 w-5" />

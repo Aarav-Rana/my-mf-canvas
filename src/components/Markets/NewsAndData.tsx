@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Newspaper, TrendingUp, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Newspaper, TrendingUp, AlertTriangle, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const news = [
   {
@@ -26,14 +28,20 @@ const news = [
 ];
 
 export const NewsAndData = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <Card className="lg:col-span-2">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="flex items-center gap-2">
             <Newspaper className="h-5 w-5" />
             Market News
           </CardTitle>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/news")}>
+            View All
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           {news.map((item, index) => (
