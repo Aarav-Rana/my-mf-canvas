@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { KeyboardShortcuts } from "@/components/shared/KeyboardShortcuts";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -81,6 +82,7 @@ export const Header = () => {
             </nav>
           </div>
           <div className="flex items-center space-x-2">
+            <KeyboardShortcuts />
             <Button 
               variant="ghost" 
               size="icon" 

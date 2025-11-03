@@ -11,10 +11,12 @@ import { InteractiveCharts } from "@/components/Markets/InteractiveCharts";
 import { EconomicCalendar } from "@/components/Markets/EconomicCalendar";
 import { MFComparison } from "@/components/Markets/MFComparison";
 import { EducationalCards } from "@/components/Markets/EducationalCards";
+import { BestInClassFilter } from "@/components/Markets/BestInClassFilter";
 
 const Markets = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [bestInClassFilter, setBestInClassFilter] = useState(false);
 
   useEffect(() => {
     // Scroll to top gainers if coming from CTA
@@ -30,10 +32,13 @@ const Markets = () => {
       <Header />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Markets Dashboard</h1>
-          <p className="text-muted-foreground">Real-time market data, insights, and investment opportunities</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+        <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Markets Dashboard</h1>
+            <p className="text-muted-foreground">Real-time market data, insights, and investment opportunities</p>
+          </div>
+          <BestInClassFilter onFilterApply={setBestInClassFilter} />
         </div>
 
         <div className="space-y-8">
