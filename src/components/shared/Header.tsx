@@ -104,12 +104,10 @@ export const Header = () => {
             {isLoggedIn ? (
               <>
                 <Button 
-                  variant="ghost" 
-                  className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
+                  variant="membership"
                   onClick={() => navigate("/membership")}
                 >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Membership</span>
+                  Membership
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
