@@ -58,29 +58,30 @@ const Index = () => {
   const returnsPercentage = totalInvestment > 0 ? (totalReturns / totalInvestment) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/10 to-background">
+    <div className="min-h-screen bg-background">
       <Header />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 space-y-8">
+      <main className="container mx-auto px-4 py-12 space-y-12">
         {/* Portfolio Section */}
-        <section className="bg-card rounded-2xl p-6 md:p-8 shadow-lg">
-          <div className="mb-6">
-            <h2 className="text-3xl font-bold text-card-foreground mb-2">Portfolio Overview</h2>
-            <p className="text-card-foreground/70">Track your mutual fund investments in real-time</p>
+        <section>
+          <div className="mb-8">
+            <h1 className="text-[2.25rem] font-bold text-foreground mb-3 leading-tight">Portfolio Overview</h1>
+            <p className="text-[0.95rem] text-muted-foreground">Track your mutual fund investments in real-time</p>
           </div>
 
           {isLoading ? (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[...Array(4)].map((_, i) => (
                   <Skeleton key={i} className="h-32 rounded-xl" />
                 ))}
               </div>
-              <Skeleton className="h-96 rounded-xl" />
+              <Skeleton className="h-[500px] rounded-xl" />
+              <Skeleton className="h-[400px] rounded-xl" />
             </div>
           ) : (
-            <>
+            <div className="space-y-8">
               <PortfolioSummaryCards
                 totalInvestment={totalInvestment}
                 currentValue={currentValue}
@@ -88,51 +89,67 @@ const Index = () => {
                 returnsPercentage={returnsPercentage}
               />
 
-              <div className="mt-8">
-                <PortfolioPieChart holdings={portfolioHoldings} />
-              </div>
+              <PortfolioPieChart holdings={portfolioHoldings} />
 
-              <div className="mt-8">
-                <PortfolioTable holdings={portfolioHoldings} />
-              </div>
-            </>
+              <PortfolioTable holdings={portfolioHoldings} />
+            </div>
           )}
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 bg-[hsl(var(--footer-bg))] text-white">
-        <div className="container mx-auto px-4 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <footer className="mt-20 bg-[hsl(var(--footer-bg))] text-[hsl(var(--footer-text))] border-t border-[hsl(var(--footer-border))]">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
             {/* About Us Section */}
             <div>
-              <h3 className="font-bold text-lg mb-3">About Us</h3>
-              <p className="text-sm leading-relaxed opacity-90">
+              <h3 className="font-bold text-[1.1rem] mb-4 text-foreground">About Us</h3>
+              <p className="text-[0.9rem] leading-relaxed text-muted-foreground">
                 We help investors make informed decisions with comprehensive portfolio tracking and market insights.
               </p>
             </div>
             
             {/* Products Section */}
             <div>
-              <h3 className="font-bold text-lg mb-3">Products</h3>
-              <ul className="space-y-2 text-sm">
-                <li className="hover:underline cursor-pointer opacity-90 hover:opacity-100">Portfolio Management</li>
-                <li className="hover:underline cursor-pointer opacity-90 hover:opacity-100">Tracking</li>
-                <li className="hover:underline cursor-pointer opacity-90 hover:opacity-100">Investment Advising</li>
+              <h3 className="font-bold text-[1.1rem] mb-4 text-foreground">Products</h3>
+              <ul className="space-y-2.5 text-[0.9rem]">
+                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-muted-foreground">
+                  Portfolio Management
+                </li>
+                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-muted-foreground">
+                  Tracking
+                </li>
+                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-muted-foreground">
+                  Investment Advising
+                </li>
               </ul>
             </div>
             
             {/* Contact Section */}
             <div>
-              <h3 className="font-bold text-lg mb-3">Contact</h3>
-              <div className="space-y-2 text-sm opacity-90">
-                <p>Email: contact@fundtracker.com</p>
-                <p>Phone: +91 98765 43210</p>
-                <div className="flex gap-3 mt-3">
-                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 transition-opacity">
+              <h3 className="font-bold text-[1.1rem] mb-4 text-foreground">Contact</h3>
+              <div className="space-y-2.5 text-[0.9rem]">
+                <p className="text-muted-foreground">
+                  Email: <a href="mailto:contact@fundtracker.com" className="text-primary hover:underline transition-colors">contact@fundtracker.com</a>
+                </p>
+                <p className="text-muted-foreground">
+                  Phone: <a href="tel:+919876543210" className="text-primary hover:underline transition-colors">+91 98765 43210</a>
+                </p>
+                <div className="flex gap-4 mt-4">
+                  <a 
+                    href="https://twitter.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-muted-foreground hover:text-primary hover:scale-110 transition-all duration-200"
+                  >
                     <Twitter className="h-5 w-5" />
                   </a>
-                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 transition-opacity">
+                  <a 
+                    href="https://linkedin.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-muted-foreground hover:text-primary hover:scale-110 transition-all duration-200"
+                  >
                     <Linkedin className="h-5 w-5" />
                   </a>
                 </div>
@@ -140,8 +157,10 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="pt-6 border-t border-white/20 text-center text-sm opacity-75">
-            <p>Data provided by MFAPI • Updated every 5 minutes</p>
+          <div className="pt-8 border-t border-[hsl(var(--footer-border))] text-center">
+            <p className="text-[0.75rem] italic text-muted-foreground">
+              Data provided by MFAPI • Updated every 5 minutes
+            </p>
           </div>
         </div>
       </footer>

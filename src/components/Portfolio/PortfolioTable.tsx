@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PortfolioHolding } from "@/types/mutualfund";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface PortfolioTableProps {
   holdings: PortfolioHolding[];
@@ -9,58 +10,78 @@ interface PortfolioTableProps {
 
 export const PortfolioTable = ({ holdings }: PortfolioTableProps) => {
   return (
-    <Card className="border-none shadow-lg bg-gradient-to-br from-card to-secondary/20">
+    <Card className="hover:shadow-[var(--shadow-hover)] transition-shadow duration-300">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold text-foreground">
-          Your Holdings
-        </CardTitle>
+        <CardTitle className="text-2xl font-bold text-card-foreground">Your Holdings</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border border-border overflow-hidden">
+        <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="font-semibold">Scheme Name</TableHead>
-                <TableHead className="text-right font-semibold">Units</TableHead>
-                <TableHead className="text-right font-semibold">Invested</TableHead>
-                <TableHead className="text-right font-semibold">Current NAV</TableHead>
-                <TableHead className="text-right font-semibold">Current Value</TableHead>
-                <TableHead className="text-right font-semibold">Returns</TableHead>
+              <TableRow className="bg-[hsl(var(--table-header-bg))] hover:bg-[hsl(var(--table-header-bg))]">
+                <TableHead className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Scheme Name</TableHead>
+                <TableHead className="text-right font-bold text-xs uppercase tracking-wider text-muted-foreground">Units</TableHead>
+                <TableHead className="text-right font-bold text-xs uppercase tracking-wider text-muted-foreground">Invested</TableHead>
+                <TableHead className="text-right font-bold text-xs uppercase tracking-wider text-muted-foreground">Current NAV</TableHead>
+                <TableHead className="text-right font-bold text-xs uppercase tracking-wider text-muted-foreground">Current Value</TableHead>
+                <TableHead className="text-right font-bold text-xs uppercase tracking-wider text-muted-foreground">Returns</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {holdings.map((holding) => {
+              {holdings.map((holding, index) => {
                 const isPositive = holding.returns >= 0;
+                const truncatedName = holding.schemeName.length > 40 
+                  ? holding.schemeName.substring(0, 40) + '...' 
+                  : holding.schemeName;
+                
                 return (
-                  <TableRow key={holding.schemeCode} className="hover:bg-muted/30 transition-colors">
-                    <TableCell className="font-medium max-w-xs">
-                      <div className="truncate" title={holding.schemeName}>
-                        {holding.schemeName}
-                      </div>
+                  <TableRow 
+                    key={holding.schemeCode} 
+                    className={`
+                      ${index % 2 === 0 ? 'bg-[hsl(var(--table-row-alt))]' : 'bg-card'}
+                      hover:bg-[hsl(var(--table-row-hover))] 
+                      transition-colors 
+                      cursor-pointer
+                      border-b border-border
+                    `}
+                  >
+                    <TableCell className="font-medium text-card-foreground py-4">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="cursor-pointer hover:text-primary transition-colors">
+                              {truncatedName}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">{holding.schemeName}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </TableCell>
-                    <TableCell className="text-right">{holding.units.toFixed(3)}</TableCell>
-                    <TableCell className="text-right">
-                      ₹{holding.investedAmount.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                    <TableCell className="text-right font-medium py-4">{holding.units.toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-medium py-4">
+                      ₹{holding.investedAmount.toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </TableCell>
-                    <TableCell className="text-right">₹{holding.currentNAV.toFixed(2)}</TableCell>
-                    <TableCell className="text-right font-medium">
-                      ₹{holding.currentValue.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+                    <TableCell className="text-right font-medium py-4">₹{holding.currentNAV.toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-medium py-4">
+                      ₹{holding.currentValue.toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className={`flex items-center justify-end gap-1 font-semibold ${
-                        isPositive ? "text-accent" : "text-destructive"
-                      }`}>
+                    <TableCell className="text-right py-4">
+                      <div className={`flex items-center justify-end gap-2 font-bold text-base ${isPositive ? "text-success" : "text-destructive"}`}>
                         {isPositive ? (
-                          <TrendingUp className="h-4 w-4" />
+                          <TrendingUp className="h-5 w-5 fill-success" />
                         ) : (
-                          <TrendingDown className="h-4 w-4" />
+                          <TrendingDown className="h-5 w-5 fill-destructive" />
                         )}
-                        <span>
-                          {isPositive ? "+" : ""}₹{holding.returns.toLocaleString("en-IN", { maximumFractionDigits: 0 })}
-                        </span>
-                        <span className="text-xs ml-1">
-                          ({isPositive ? "+" : ""}{holding.returnsPercentage.toFixed(2)}%)
-                        </span>
+                        <div className="flex flex-col items-end">
+                          <span>
+                            {isPositive ? "+" : "-"}₹{Math.abs(holding.returns).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          </span>
+                          <span className="text-sm font-semibold">
+                            ({isPositive ? "+" : ""}{holding.returnsPercentage.toFixed(2)}%)
+                          </span>
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>
