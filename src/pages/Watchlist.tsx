@@ -101,7 +101,34 @@ const Watchlist = () => {
   const returnsPercentage = 18.2;
 
   const handleExport = () => {
-    toast.success("Exporting watchlist data...");
+    // Convert watchlist data to CSV format
+    const headers = ["Scheme Code", "Scheme Name", "Current NAV", "Change", "Change %", "Category"];
+    const csvData = watchlist.map(item => [
+      item.scheme_code,
+      item.scheme_name,
+      item.current_nav,
+      item.change,
+      item.change_percentage,
+      item.category
+    ]);
+    
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+    
+    // Create and download CSV file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `watchlist_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success("Watchlist exported successfully");
   };
 
   const handleRefresh = () => {

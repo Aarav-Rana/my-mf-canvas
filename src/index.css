@@ -92,10 +92,10 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 231 48% 48%;
+    --primary: 158 64% 42%;
     --primary-foreground: 0 0% 100%;
     
-    --primary-glow: 231 48% 62%;
+    --primary-glow: 158 64% 52%;
 
     --secondary: 220 14% 96%;
     --secondary-foreground: 222 47% 11%;
@@ -109,16 +109,17 @@ All colors MUST be HSL.
     --accent-dark: 158 64% 38%;
     --accent-dark-foreground: 0 0% 100%;
     
-    --header-bg: 68 33% 96%;
-    --header-text: 118 16% 22%;
-    --footer-bg: 171 69% 15%;
+    --header-bg: 0 0% 100%;
+    --header-text: 158 64% 42%;
+    --header-border: 220 13% 91%;
+    --footer-bg: 220 14% 96%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 231 48% 48%;
+    --ring: 158 64% 42%;
     
     --success: 158 64% 52%;
     --success-foreground: 0 0% 100%;

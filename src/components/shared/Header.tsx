@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Bell, User, LogOut } from "lucide-react";
+import { Bell, User, LogOut, Sun, Moon, CreditCard } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -91,8 +93,24 @@ export const Header = () => {
             >
               <Bell className="h-4 w-4" />
             </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
             {isLoggedIn ? (
               <>
+                <Button 
+                  variant="ghost" 
+                  className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10"
+                  onClick={() => navigate("/membership")}
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Membership</span>
+                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="text-[hsl(var(--header-text))] hover:bg-[hsl(var(--header-text))]/10">
@@ -103,9 +121,6 @@ export const Header = () => {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => navigate("/profile")}>
                       My Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/membership")}>
-                      Membership
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="h-4 w-4 mr-2" />
