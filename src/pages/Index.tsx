@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { PortfolioSummaryCards } from "@/components/Portfolio/PortfolioSummaryCards";
 import { PortfolioPieChart } from "@/components/Portfolio/PortfolioPieChart";
 import { PortfolioTable } from "@/components/Portfolio/PortfolioTable";
+import { UploadNSDLButton } from "@/components/Portfolio/UploadNSDLButton";
 import { useMultipleFundDetails } from "@/hooks/useMutualFunds";
+import { usePortfolioHoldings } from "@/hooks/usePortfolioHoldings";
 import { PortfolioHolding } from "@/types/mutualfund";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import { Twitter, Linkedin } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/shared/Header";
 
 // Sample portfolio holdings with popular Indian mutual funds
@@ -20,15 +21,36 @@ const SAMPLE_HOLDINGS = [
 ];
 
 const Index = () => {
-  const navigate = useNavigate();
   const [portfolioHoldings, setPortfolioHoldings] = useState<PortfolioHolding[]>([]);
+  const [userId, setUserId] = useState<string | undefined>();
+
+  // Get authenticated user
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id);
+    });
+  }, []);
+
+  // Load holdings from database
+  const { holdings, isLoading: isLoadingHoldings } = usePortfolioHoldings(userId);
   
-  const schemeCodes = SAMPLE_HOLDINGS.map(h => h.schemeCode);
-  const { data: fundsData, isLoading } = useMultipleFundDetails(schemeCodes);
+  // Fallback to sample data if no holdings in database
+  const baseHoldings = holdings.length > 0 
+    ? holdings.map(h => ({
+        schemeCode: h.scheme_code,
+        schemeName: h.scheme_name,
+        units: Number(h.units),
+        avgNAV: Number(h.invested_amount) / Number(h.units),
+      }))
+    : SAMPLE_HOLDINGS;
+
+  const schemeCodes = baseHoldings.map(h => h.schemeCode);
+  const { data: fundsData, isLoading: isLoadingFunds } = useMultipleFundDetails(schemeCodes);
+  const isLoading = isLoadingHoldings || isLoadingFunds;
 
   useEffect(() => {
     if (fundsData && fundsData.length > 0) {
-      const holdings: PortfolioHolding[] = SAMPLE_HOLDINGS.map((holding, index) => {
+      const holdings: PortfolioHolding[] = baseHoldings.map((holding, index) => {
         const fundData = fundsData[index];
         const currentNAV = fundData?.data?.[0]?.nav ? parseFloat(fundData.data[0].nav) : holding.avgNAV;
         const investedAmount = holding.units * holding.avgNAV;
@@ -50,7 +72,7 @@ const Index = () => {
 
       setPortfolioHoldings(holdings);
     }
-  }, [fundsData]);
+  }, [fundsData, holdings]);
 
   const totalInvestment = portfolioHoldings.reduce((sum, h) => sum + h.investedAmount, 0);
   const currentValue = portfolioHoldings.reduce((sum, h) => sum + h.currentValue, 0);
@@ -65,9 +87,12 @@ const Index = () => {
       <main className="container mx-auto px-4 py-12 space-y-12">
         {/* Portfolio Section */}
         <section>
-          <div className="mb-8">
-            <h1 className="text-[2.25rem] font-bold text-foreground mb-3 leading-tight">Portfolio Overview</h1>
-            <p className="text-[0.95rem] text-muted-foreground">Track your mutual fund investments in real-time</p>
+          <div className="mb-8 flex items-start justify-between">
+            <div>
+              <h1 className="text-[2.25rem] font-bold text-foreground mb-3 leading-tight">Portfolio Overview</h1>
+              <p className="text-[0.95rem] text-muted-foreground">Track your mutual fund investments in real-time</p>
+            </div>
+            <UploadNSDLButton />
           </div>
 
           {isLoading ? (

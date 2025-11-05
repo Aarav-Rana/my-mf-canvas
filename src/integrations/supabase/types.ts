@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      portfolio_holdings: {
+        Row: {
+          category: string | null
+          created_at: string
+          current_nav: number
+          current_value: number
+          folio_number: string | null
+          id: string
+          invested_amount: number
+          returns: number
+          returns_percentage: number
+          scheme_code: string
+          scheme_name: string
+          units: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          current_nav: number
+          current_value?: number
+          folio_number?: string | null
+          id?: string
+          invested_amount: number
+          returns?: number
+          returns_percentage?: number
+          scheme_code: string
+          scheme_name: string
+          units: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          current_nav?: number
+          current_value?: number
+          folio_number?: string | null
+          id?: string
+          invested_amount?: number
+          returns?: number
+          returns_percentage?: number
+          scheme_code?: string
+          scheme_name?: string
+          units?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       watchlist: {
         Row: {
           category: string
