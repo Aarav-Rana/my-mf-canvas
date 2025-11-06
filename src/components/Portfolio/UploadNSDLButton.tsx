@@ -10,7 +10,7 @@ export const UploadNSDLButton = () => {
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="bg-portfolio-gain text-white hover:bg-portfolio-gain/90 shadow-md transition-all duration-200 hover:-translate-y-0.5"
+        className="bg-[hsl(var(--upload-button))] text-[hsl(var(--upload-button-foreground))] hover:bg-[hsl(var(--upload-button))]/90 shadow-md transition-all duration-200 hover:-translate-y-0.5"
         aria-label="Upload NSDL Consolidated Account Statement"
       >
         <Upload className="mr-2 h-4 w-4" />

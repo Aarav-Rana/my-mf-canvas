@@ -57,6 +57,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        portfolio: {
+          gain: "hsl(var(--portfolio-gain))",
+          loss: "hsl(var(--portfolio-loss))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

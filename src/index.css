@@ -8,15 +8,15 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --hero-gradient-from: 0 0% 96%;
-    --hero-gradient-via: 0 0% 96%;
-    --hero-gradient-to: 0 0% 96%;
+    --hero-gradient-from: 60 22% 94%;
+    --hero-gradient-via: 60 22% 94%;
+    --hero-gradient-to: 60 22% 94%;
     
-    --background: 0 0% 96%;
-    --foreground: 0 0% 13%;
+    --background: 60 22% 94%;
+    --foreground: 164 38% 16%;
 
-    --card: 0 0% 96%;
-    --card-foreground: 0 0% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 183 34% 23%;
     --card-border: 0 0% 88%;
 
     --popover: 0 0% 96%;
@@ -42,12 +42,12 @@ All colors MUST be HSL.
     --accent-dark: 123 46% 28%;
     --accent-dark-foreground: 0 0% 100%;
     
-    --header-bg: 0 0% 96%;
-    --header-text: 123 46% 34%;
+    --header-bg: 60 25% 96%;
+    --header-text: 172 75% 15%;
     --header-border: 0 0% 88%;
-    --footer-bg: 123 54% 23%;
+    --footer-bg: 183 34% 23%;
     --footer-text: 0 0% 100%;
-    --footer-border: 123 54% 18%;
+    --footer-border: 183 34% 23%;
 
     --destructive: 0 71% 47%;
     --destructive-foreground: 0 0% 100%;
@@ -63,6 +63,12 @@ All colors MUST be HSL.
     
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
+    
+    --upload-button: 172 67% 14%;
+    --upload-button-foreground: 0 0% 100%;
+    
+    --portfolio-gain: 172 67% 14%;
+    --portfolio-loss: 0 71% 47%;
     
     --table-header-bg: 0 0% 96%;
     --table-row-hover: 0 0% 98%;
