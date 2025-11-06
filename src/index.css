@@ -48,6 +48,7 @@ All colors MUST be HSL.
     --footer-bg: 164 79% 17%;
     --footer-text: 0 0% 100%;
     --footer-border: 164 79% 17%;
+    --footer-foreground: 0 0% 100%;
 
     --destructive: 0 71% 47%;
     --destructive-foreground: 0 0% 100%;
