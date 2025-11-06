@@ -128,23 +128,23 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
             {/* About Us Section */}
             <div>
-              <h3 className="font-bold text-[1.1rem] mb-4 text-foreground">About Us</h3>
-              <p className="text-[0.9rem] leading-relaxed text-muted-foreground">
+              <h3 className="font-bold text-[calc(1.1rem+2px)] mb-4 text-white">About Us</h3>
+              <p className="text-[0.9rem] leading-relaxed text-white">
                 We help investors make informed decisions with comprehensive portfolio tracking and market insights.
               </p>
             </div>
             
             {/* Products Section */}
             <div>
-              <h3 className="font-bold text-[1.1rem] mb-4 text-foreground">Products</h3>
+              <h3 className="font-bold text-[calc(1.1rem+2px)] mb-4 text-white">Products</h3>
               <ul className="space-y-2.5 text-[0.9rem]">
-                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-muted-foreground">
+                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-white">
                   Portfolio Management
                 </li>
-                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-muted-foreground">
+                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-white">
                   Tracking
                 </li>
-                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-muted-foreground">
+                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-white">
                   Investment Advising
                 </li>
               </ul>
@@ -152,20 +152,20 @@ const Index = () => {
             
             {/* Contact Section */}
             <div>
-              <h3 className="font-bold text-[1.1rem] mb-4 text-foreground">Contact</h3>
+              <h3 className="font-bold text-[calc(1.1rem+2px)] mb-4 text-white">Contact</h3>
               <div className="space-y-2.5 text-[0.9rem]">
-                <p className="text-muted-foreground">
-                  Email: <a href="mailto:contact@fundtracker.com" className="text-primary hover:underline transition-colors">contact@fundtracker.com</a>
+                <p className="text-white">
+                  Email: <a href="mailto:contact@fundtracker.com" className="text-white hover:underline transition-colors">contact@fundtracker.com</a>
                 </p>
-                <p className="text-muted-foreground">
-                  Phone: <a href="tel:+919876543210" className="text-primary hover:underline transition-colors">+91 98765 43210</a>
+                <p className="text-white">
+                  Phone: <a href="tel:+919876543210" className="text-white hover:underline transition-colors">+91 98765 43210</a>
                 </p>
                 <div className="flex gap-4 mt-4">
                   <a 
                     href="https://twitter.com" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-muted-foreground hover:text-primary hover:scale-110 transition-all duration-200"
+                    className="text-white hover:text-primary hover:scale-110 transition-all duration-200"
                   >
                     <Twitter className="h-5 w-5" />
                   </a>
@@ -173,7 +173,7 @@ const Index = () => {
                     href="https://linkedin.com" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-muted-foreground hover:text-primary hover:scale-110 transition-all duration-200"
+                    className="text-white hover:text-primary hover:scale-110 transition-all duration-200"
                   >
                     <Linkedin className="h-5 w-5" />
                   </a>
@@ -183,7 +183,7 @@ const Index = () => {
           </div>
           
           <div className="pt-8 border-t border-[hsl(var(--footer-border))] text-center">
-            <p className="text-[0.75rem] italic text-muted-foreground">
+            <p className="text-[0.75rem] italic text-white">
               Data provided by MFAPI • Updated every 5 minutes
             </p>
           </div>
