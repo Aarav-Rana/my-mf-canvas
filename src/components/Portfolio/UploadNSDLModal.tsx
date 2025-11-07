@@ -23,6 +23,7 @@ export const UploadNSDLModal = ({ isOpen, onClose }: UploadNSDLModalProps) => {
   const [fundCount, setFundCount] = useState(0);
   const [progress, setProgress] = useState(0);
   const [userId, setUserId] = useState<string | undefined>();
+  const [isEncrypted, setIsEncrypted] = useState(true);
 
   // Get user ID on mount
   useEffect(() => {
@@ -42,7 +43,7 @@ export const UploadNSDLModal = ({ isOpen, onClose }: UploadNSDLModalProps) => {
   };
 
   const handleSubmit = async () => {
-    if (!file || !password) return;
+    if (!file || (isEncrypted && !password)) return;
 
     try {
       setIsProcessing(true);
@@ -55,7 +56,7 @@ export const UploadNSDLModal = ({ isOpen, onClose }: UploadNSDLModalProps) => {
       setProcessingStep(2);
 
       // Step 2: Read mutual fund entries (40%)
-      const extractedData = await processPDFFile(file, password);
+      const extractedData = await processPDFFile(file, isEncrypted ? password : "");
       setFundCount(extractedData.length);
       setProgress(40);
 
@@ -123,10 +124,11 @@ export const UploadNSDLModal = ({ isOpen, onClose }: UploadNSDLModalProps) => {
     setProcessingStep(0);
     setProgress(0);
     setFundCount(0);
+    setIsEncrypted(true);
     onClose();
   };
 
-  const isValid = file && password.length >= 1;
+  const isValid = file && (isEncrypted ? password.length >= 1 : true);
 
   return (
     <>
@@ -142,16 +144,49 @@ export const UploadNSDLModal = ({ isOpen, onClose }: UploadNSDLModalProps) => {
           </DialogHeader>
 
           <div className="space-y-6 py-4">
+            {/* Document Type Selection */}
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-card-foreground">Select Document Type</p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEncrypted(true)}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    isEncrypted
+                      ? "border-portfolio-gain bg-portfolio-gain/10"
+                      : "border-border hover:border-portfolio-gain/50"
+                  }`}
+                >
+                  <p className="font-semibold text-sm">🔒 Encrypted NSDL</p>
+                  <p className="text-xs text-muted-foreground mt-1">Password-protected CAS</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEncrypted(false)}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    !isEncrypted
+                      ? "border-portfolio-gain bg-portfolio-gain/10"
+                      : "border-border hover:border-portfolio-gain/50"
+                  }`}
+                >
+                  <p className="font-semibold text-sm">📄 Decrypted NSDL</p>
+                  <p className="text-xs text-muted-foreground mt-1">Unprotected CAS</p>
+                </button>
+              </div>
+            </div>
+
             <FileUploadZone
               file={file}
               onFileSelect={handleFileSelect}
               onFileRemove={handleFileRemove}
             />
 
-            <PasswordInput
-              value={password}
-              onChange={setPassword}
-            />
+            {isEncrypted && (
+              <PasswordInput
+                value={password}
+                onChange={setPassword}
+              />
+            )}
 
             <SecurityBadge />
 
@@ -161,7 +196,7 @@ export const UploadNSDLModal = ({ isOpen, onClose }: UploadNSDLModalProps) => {
                 disabled={!isValid}
                 className="flex-1 bg-portfolio-gain hover:bg-portfolio-gain/90 text-white"
               >
-                Decrypt & Import All
+                {isEncrypted ? "Decrypt & Import All" : "Import All"}
               </Button>
               <Button
                 onClick={handleClose}

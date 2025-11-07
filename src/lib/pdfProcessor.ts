@@ -16,7 +16,11 @@ export const processPDFFile = async (file: File, password: string): Promise<Extr
     // Prepare form data for CAS Parser API
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('password', password);
+    
+    // Only append password if provided (for encrypted PDFs)
+    if (password) {
+      formData.append('password', password);
+    }
 
     // Call CAS Parser API
     const response = await fetch('https://api.casparser.in/v1/parse', {
