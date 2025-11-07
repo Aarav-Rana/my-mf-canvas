@@ -101,11 +101,11 @@ export const UploadNSDLModal = ({ isOpen, onClose }: UploadNSDLModalProps) => {
     } catch (error: any) {
       console.error("Upload error:", error);
       
-      if (error.message.includes("password")) {
+      if (error.message.includes("Incorrect password")) {
         toast.error("Incorrect password. Please try again.");
       } else if (error.message.includes("No mutual fund data")) {
         toast.error("No mutual fund data found. Please upload a valid NSDL CAS.");
-      } else if (error.message.includes("not a valid")) {
+      } else if (error.message.includes("valid NSDL CAS statement")) {
         toast.error("This doesn't appear to be a valid NSDL statement.");
       } else {
         toast.error("Failed to process the file. Please try again.");

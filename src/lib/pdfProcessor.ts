@@ -35,11 +35,15 @@ export const processPDFFile = async (file: File, password: string): Promise<Extr
       const errorData = await response.json().catch(() => ({}));
       console.error('CAS Parser error:', response.status, errorData);
       
-      if (response.status === 401 || response.status === 403) {
-        throw new Error("Incorrect password. Please try again.");
+      // Refined error handling:
+      // Only throw "Incorrect password" if a password was actually provided AND we get a 401/403
+      if (password && password.trim().length > 0 && (response.status === 401 || response.status === 403)) {
+        throw new Error("Incorrect password. Please try again."); 
       } else if (response.status === 400) {
         throw new Error("This doesn't appear to be a valid NSDL statement.");
       }
+      // For other non-OK statuses (including 401/403 when no password was given),
+      // or if the errorData has a specific message, use that.
       throw new Error(errorData.error || `Failed to parse document. Please ensure it's a valid NSDL CAS statement.`);
     }
 
@@ -54,12 +58,8 @@ export const processPDFFile = async (file: File, password: string): Promise<Extr
 
     return funds;
   } catch (error: any) {
-    if (error.message.includes("password") || error.message.includes("Incorrect")) {
-      throw new Error("Incorrect password. Please try again.");
-    } else if (error.message.includes("valid") || error.message.includes("NSDL")) {
-      throw new Error("This doesn't appear to be a valid NSDL statement.");
-    }
-    throw error;
+    // Re-throw the specific error generated above
+    throw error; 
   }
 };
 
