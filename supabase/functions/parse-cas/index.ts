@@ -38,6 +38,7 @@ serve(async (req) => {
     const responseData = await response.json();
 
     if (!response.ok) {
+      console.error('CAS Parser API returned an error:', response.status, responseData); // Added logging
       return new Response(
         JSON.stringify({ error: responseData.error || 'Failed to parse document', status: response.status }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
