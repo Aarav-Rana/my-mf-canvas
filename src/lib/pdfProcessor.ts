@@ -17,8 +17,8 @@ export const processPDFFile = async (file: File, password: string): Promise<Extr
     const formData = new FormData();
     formData.append('file', file);
     
-    // Only append password if provided (for encrypted PDFs)
-    if (password) {
+    // Only append password if provided and not empty (for encrypted PDFs)
+    if (password && password.trim().length > 0) {
       formData.append('password', password);
     }
 
@@ -29,12 +29,15 @@ export const processPDFFile = async (file: File, password: string): Promise<Extr
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('CAS Parser API error:', response.status, errorText);
+      
       if (response.status === 401 || response.status === 403) {
         throw new Error("Incorrect password. Please try again.");
       } else if (response.status === 400) {
         throw new Error("This doesn't appear to be a valid NSDL statement.");
       }
-      throw new Error(`API error: ${response.status}`);
+      throw new Error(`Failed to parse document. Please ensure it's a valid NSDL CAS statement.`);
     }
 
     const data = await response.json();
