@@ -1,8 +1,3 @@
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-
 interface ExtractedFund {
   schemeCode: string;
   schemeName: string;
@@ -18,30 +13,30 @@ interface ExtractedFund {
 
 export const processPDFFile = async (file: File, password: string): Promise<ExtractedFund[]> => {
   try {
-    // Read file as ArrayBuffer
-    const arrayBuffer = await file.arrayBuffer();
-    
-    // Load PDF with password
-    const loadingTask = pdfjsLib.getDocument({
-      data: arrayBuffer,
-      password: password,
+    // Prepare form data for CAS Parser API
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('password', password);
+
+    // Call CAS Parser API
+    const response = await fetch('https://api.casparser.in/v1/parse', {
+      method: 'POST',
+      body: formData,
     });
 
-    const pdf = await loadingTask.promise;
-    let fullText = '';
-
-    // Extract text from all pages
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-      const page = await pdf.getPage(pageNum);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items
-        .map((item: any) => item.str)
-        .join(' ');
-      fullText += pageText + '\n';
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new Error("Incorrect password. Please try again.");
+      } else if (response.status === 400) {
+        throw new Error("This doesn't appear to be a valid NSDL statement.");
+      }
+      throw new Error(`API error: ${response.status}`);
     }
 
-    // Parse the extracted text to find mutual fund entries
-    const funds = parseMutualFundData(fullText);
+    const data = await response.json();
+
+    // Parse the CAS Parser response
+    const funds = parseCASParserResponse(data);
 
     if (funds.length === 0) {
       throw new Error("No mutual fund data found in the statement");
@@ -49,98 +44,57 @@ export const processPDFFile = async (file: File, password: string): Promise<Extr
 
     return funds;
   } catch (error: any) {
-    if (error.name === 'PasswordException') {
+    if (error.message.includes("password") || error.message.includes("Incorrect")) {
       throw new Error("Incorrect password. Please try again.");
-    } else if (error.name === 'InvalidPDFException') {
+    } else if (error.message.includes("valid") || error.message.includes("NSDL")) {
       throw new Error("This doesn't appear to be a valid NSDL statement.");
     }
     throw error;
   }
 };
 
-const parseMutualFundData = (text: string): ExtractedFund[] => {
+const parseCASParserResponse = (data: any): ExtractedFund[] => {
   const funds: ExtractedFund[] = [];
   
-  // This is a simplified parser - in production, you'd need more sophisticated regex
-  // to match the actual NSDL CAS format. This demo version creates mock data.
-  
-  // Look for patterns like scheme names, folio numbers, units, NAV, etc.
-  // For now, we'll return sample parsed data to demonstrate the flow
-  
-  // In a real implementation, you would:
-  // 1. Use regex to find scheme names (usually in ALL CAPS or Title Case)
-  // 2. Find associated folio numbers (format: 12345678/99)
-  // 3. Extract units (decimal numbers)
-  // 4. Extract NAV values
-  // 5. Calculate current value and returns
-  
-  // Sample parsing logic (replace with actual NSDL format parsing):
-  const lines = text.split('\n');
-  let currentFund: Partial<ExtractedFund> | null = null;
-  
-  for (const line of lines) {
-    // Look for scheme names (simplified - actual format may vary)
-    if (line.includes('SCHEME') || line.includes('Fund') || line.includes('EQUITY') || line.includes('DEBT')) {
-      if (currentFund && currentFund.schemeName) {
-        // Finalize previous fund
-        if (currentFund.units && currentFund.currentNAV) {
-          currentFund.currentValue = currentFund.units * currentFund.currentNAV;
-          currentFund.returns = currentFund.currentValue! - (currentFund.investedAmount || 0);
-          currentFund.returnsPercentage = currentFund.investedAmount 
-            ? (currentFund.returns / currentFund.investedAmount) * 100 
-            : 0;
-          funds.push(currentFund as ExtractedFund);
+  try {
+    // CAS Parser API returns data in a specific format
+    // Navigate through the response structure
+    const folios = data?.cas_data?.folios || [];
+    
+    for (const folio of folios) {
+      const folioNumber = folio?.folio || null;
+      const schemes = folio?.schemes || [];
+      
+      for (const scheme of schemes) {
+        const schemeName = scheme?.scheme || 'Unknown Scheme';
+        const schemeCode = scheme?.isin || generateSchemeCode();
+        const units = parseFloat(scheme?.close_calculated?.units || 0);
+        const currentNAV = parseFloat(scheme?.close_calculated?.nav || 0);
+        const currentValue = parseFloat(scheme?.close_calculated?.value || 0);
+        const investedAmount = parseFloat(scheme?.valuation?.cost || 0);
+        const returns = currentValue - investedAmount;
+        const returnsPercentage = investedAmount ? (returns / investedAmount) * 100 : 0;
+        const category = detectCategory(schemeName);
+        
+        if (units > 0) {
+          funds.push({
+            schemeCode,
+            schemeName,
+            folioNumber,
+            units,
+            currentNAV,
+            investedAmount,
+            currentValue,
+            returns,
+            returnsPercentage,
+            category,
+          });
         }
       }
-      
-      // Start new fund
-      currentFund = {
-        schemeCode: generateSchemeCode(),
-        schemeName: line.trim(),
-        folioNumber: null,
-        units: 0,
-        currentNAV: 0,
-        investedAmount: 0,
-        currentValue: 0,
-        returns: 0,
-        returnsPercentage: 0,
-        category: detectCategory(line),
-      };
     }
-    
-    // Look for folio numbers (pattern: digits/digits)
-    const folioMatch = line.match(/(\d{6,12}\/\d{2,4})/);
-    if (folioMatch && currentFund) {
-      currentFund.folioNumber = folioMatch[1];
-    }
-    
-    // Look for units (decimal numbers)
-    const unitsMatch = line.match(/Units?\s*:?\s*([\d,]+\.?\d*)/i);
-    if (unitsMatch && currentFund) {
-      currentFund.units = parseFloat(unitsMatch[1].replace(/,/g, ''));
-    }
-    
-    // Look for NAV
-    const navMatch = line.match(/NAV\s*:?\s*₹?\s*([\d,]+\.?\d*)/i);
-    if (navMatch && currentFund) {
-      currentFund.currentNAV = parseFloat(navMatch[1].replace(/,/g, ''));
-    }
-    
-    // Look for invested amount
-    const investedMatch = line.match(/(?:Cost|Invested)\s*:?\s*₹?\s*([\d,]+\.?\d*)/i);
-    if (investedMatch && currentFund) {
-      currentFund.investedAmount = parseFloat(investedMatch[1].replace(/,/g, ''));
-    }
-  }
-  
-  // Finalize last fund
-  if (currentFund && currentFund.schemeName && currentFund.units && currentFund.currentNAV) {
-    currentFund.currentValue = currentFund.units * currentFund.currentNAV;
-    currentFund.returns = currentFund.currentValue! - (currentFund.investedAmount || 0);
-    currentFund.returnsPercentage = currentFund.investedAmount 
-      ? (currentFund.returns / currentFund.investedAmount) * 100 
-      : 0;
-    funds.push(currentFund as ExtractedFund);
+  } catch (error) {
+    console.error('Error parsing CAS Parser response:', error);
+    throw new Error('Failed to parse CAS statement data');
   }
   
   return funds;
