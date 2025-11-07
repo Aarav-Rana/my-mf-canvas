@@ -13,7 +13,7 @@ interface ExtractedFund {
 
 export const processPDFFile = async (file: File, password: string): Promise<ExtractedFund[]> => {
   try {
-    // Prepare form data for CAS Parser API
+    // Prepare form data for edge function
     const formData = new FormData();
     formData.append('file', file);
     
@@ -22,22 +22,25 @@ export const processPDFFile = async (file: File, password: string): Promise<Extr
       formData.append('password', password);
     }
 
-    // Call CAS Parser API
-    const response = await fetch('https://api.casparser.in/v1/parse', {
+    // Call edge function proxy (avoids CORS issues)
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-cas`, {
       method: 'POST',
       body: formData,
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      },
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('CAS Parser API error:', response.status, errorText);
+      const errorData = await response.json().catch(() => ({}));
+      console.error('CAS Parser error:', response.status, errorData);
       
       if (response.status === 401 || response.status === 403) {
         throw new Error("Incorrect password. Please try again.");
       } else if (response.status === 400) {
         throw new Error("This doesn't appear to be a valid NSDL statement.");
       }
-      throw new Error(`Failed to parse document. Please ensure it's a valid NSDL CAS statement.`);
+      throw new Error(errorData.error || `Failed to parse document. Please ensure it's a valid NSDL CAS statement.`);
     }
 
     const data = await response.json();
