@@ -6,11 +6,11 @@ export const SecurityBadge = () => {
       <div className="flex items-center gap-3 mb-2">
         <Shield className="h-5 w-5 text-portfolio-gain" />
         <span className="font-bold text-sm text-portfolio-gain">
-          100% Client-Side Processing
+          Secure Third-Party Processing
         </span>
       </div>
       <p className="text-xs text-muted-foreground">
-        SEBI & NSDL compliant. No data stored. Auto-wiped after import.
+        Your CAS file is securely processed by a trusted third-party API. No data is stored on our servers.
       </p>
     </div>
   );

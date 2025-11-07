@@ -23,10 +23,12 @@ import { WatchlistTools } from "@/components/Watchlist/WatchlistTools";
 import { WatchlistInspector } from "@/components/Watchlist/WatchlistInspector";
 import { CompareDialog } from "@/components/Watchlist/CompareDialog";
 import { OverlapDialog } from "@/components/Watchlist/OverlapDialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 const Watchlist = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [userId, setUserId] = useState<string | undefined>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -96,9 +98,10 @@ const Watchlist = () => {
     setSelectedSchemeCode(null);
   };
 
-  const totalValue = 1240000; // ₹12.4L
-  const totalReturns = 225000;
-  const returnsPercentage = 18.2;
+  // Calculate dynamic watchlist summary
+  const totalValue = watchlist.reduce((sum, item) => sum + item.current_nav, 0);
+  const totalReturns = watchlist.reduce((sum, item) => sum + item.change, 0);
+  const returnsPercentage = totalValue > 0 ? (totalReturns / totalValue) * 100 : 0;
 
   const handleExport = () => {
     // Convert watchlist data to CSV format
@@ -132,7 +135,8 @@ const Watchlist = () => {
   };
 
   const handleRefresh = () => {
-    toast.success("Refreshing data...");
+    queryClient.invalidateQueries({ queryKey: ["watchlist", userId] });
+    toast.success("Watchlist data refreshed!");
   };
 
   const handleToggleCompare = (item: WatchlistItem) => {

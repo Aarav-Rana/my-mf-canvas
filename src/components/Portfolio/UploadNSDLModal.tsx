@@ -139,7 +139,7 @@ export const UploadNSDLModal = ({ isOpen, onClose }: UploadNSDLModalProps) => {
               Import All Your Mutual Funds from NSDL
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              Upload your password-protected CAS to instantly add all your holdings.
+              Upload your CAS to instantly add all your holdings. Your file is securely processed via a trusted API.
             </DialogDescription>
           </DialogHeader>
 
@@ -210,15 +210,15 @@ export const UploadNSDLModal = ({ isOpen, onClose }: UploadNSDLModalProps) => {
             <div className="pt-4 border-t text-xs text-muted-foreground space-y-2">
               <div className="flex items-center gap-2">
                 <span>🔒</span>
-                <span>Encrypted in-browser using Web Crypto API</span>
+                <span>Your file and password are securely sent to a trusted CAS parser API for processing.</span>
               </div>
               <div className="flex items-center gap-2">
                 <span>🗑️</span>
-                <span>Auto-wiped from memory after import</span>
+                <span>No data is stored on our servers after processing.</span>
               </div>
               <div className="flex items-center gap-2">
                 <span>✓</span>
-                <span>SEBI & NSDL compliant</span>
+                <span>SEBI & NSDL compliant processing.</span>
               </div>
             </div>
           </div>

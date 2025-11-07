@@ -37,7 +37,7 @@ export const PasswordInput = ({ value, onChange }: PasswordInputProps) => {
       </div>
       <p className="text-xs text-muted-foreground flex items-center gap-2">
         <Lock className="h-3 w-3" />
-        Your file is encrypted. We decrypt it only in your browser — your password and file are never sent or stored.
+        Your password is used to decrypt the CAS file by a trusted third-party API. It is not stored.
       </p>
     </div>
   );
