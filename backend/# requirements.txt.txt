@@ -1,0 +1,7 @@
+# requirements.txt
+flask==3.0.0
+flask-cors==4.0.0
+casparser==0.8.0
+PyMuPDF==1.23.0
+werkzeug==3.0.0
+pdfplumber==0.10.0
