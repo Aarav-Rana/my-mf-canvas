@@ -1,24 +1,52 @@
-# Logs
-logs
-*.log
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+backend/venv/
+
+# Node
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Environment
+.env
+.env.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# IDE
+.vscode/
+.idea/
+
+# OS
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# Temporary files
+*.log
+*.pdf
+backend/*.pdf
+
+# Build outputs
+dist/
+build/
+out/
+coverage/
+
+# Caches (Vite/Webpack/Parcel)
+.cache/
+.vite/
+.next/
+.nuxt/
+
+# Tailwind/PostCSS caches
+*.css.map
+*.postcss-cache
+
+# Database
+*.sqlite3
