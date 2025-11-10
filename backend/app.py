@@ -227,5 +227,6 @@ if __name__ == '__main__':
     print("   POST /api/parse-nsdl/summary - Summary only")
     print("\n💡 Test with:")
     print('   curl -X POST http://localhost:5000/api/parse-nsdl/summary -F "file=@path/to/nsdl.pdf" -F "password=YOUR_PAN"')
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
     
