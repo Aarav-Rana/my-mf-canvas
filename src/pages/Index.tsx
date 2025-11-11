@@ -1,3 +1,4 @@
+// src/pages/Index.tsx
 import { useState, useEffect } from "react";
 import { PortfolioSummaryCards } from "@/components/Portfolio/PortfolioSummaryCards";
 import { PortfolioPieChart } from "@/components/Portfolio/PortfolioPieChart";
@@ -10,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Twitter, Linkedin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/shared/Header";
+import { AppSidebar } from "@/components/ui/sidebar"; // ← ADDED
 
 // Sample portfolio holdings with popular Indian mutual funds
 const SAMPLE_HOLDINGS = [
@@ -80,115 +82,124 @@ const Index = () => {
   const returnsPercentage = totalInvestment > 0 ? (totalReturns / totalInvestment) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="flex min-h-screen bg-background">
+      {/* SIDEBAR */}
+      <AppSidebar />
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-12 space-y-12">
-        {/* Portfolio Section */}
-        <section>
-          <div className="mb-8 flex items-start justify-between">
-            <div>
-              <h1 className="text-[2.25rem] font-bold text-foreground mb-3 leading-tight">Portfolio Overview</h1>
-              <p className="text-[0.95rem] text-muted-foreground">Track your mutual fund investments in real-time</p>
-            </div>
-            <UploadNSDLButton />
-          </div>
+      {/* MAIN CONTENT */}
+      <div className="flex-1 flex flex-col">
+        <Header />
 
-          {isLoading ? (
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[...Array(4)].map((_, i) => (
-                  <Skeleton key={i} className="h-32 rounded-xl" />
-                ))}
+        <main className="flex-1 container mx-auto px-4 py-12 space-y-12">
+          {/* Portfolio Section */}
+          <section>
+            <div className="mb-8 flex items-start justify-between">
+              <div>
+                <h1 className="text-[2.25rem] font-bold text-foreground mb-3 leading-tight">
+                  Portfolio Overview
+                </h1>
+                <p className="text-[0.95rem] text-muted-foreground">
+                  Track your mutual fund investments in real-time
+                </p>
               </div>
-              <Skeleton className="h-[500px] rounded-xl" />
-              <Skeleton className="h-[400px] rounded-xl" />
+              <UploadNSDLButton />
             </div>
-          ) : (
-            <div className="space-y-8">
-              <PortfolioSummaryCards
-                totalInvestment={totalInvestment}
-                currentValue={currentValue}
-                totalReturns={totalReturns}
-                returnsPercentage={returnsPercentage}
-              />
 
-              <PortfolioPieChart holdings={portfolioHoldings} />
+            {isLoading ? (
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {[...Array(4)].map((_, i) => (
+                    <Skeleton key={i} className="h-32 rounded-xl" />
+                  ))}
+                </div>
+                <Skeleton className="h-[500px] rounded-xl" />
+                <Skeleton className="h-[400px] rounded-xl" />
+              </div>
+            ) : (
+              <div className="space-y-8">
+                <PortfolioSummaryCards
+                  totalInvestment={totalInvestment}
+                  currentValue={currentValue}
+                  totalReturns={totalReturns}
+                  returnsPercentage={returnsPercentage}
+                />
 
-              <PortfolioTable holdings={portfolioHoldings} />
-            </div>
-          )}
-        </section>
-      </main>
+                <PortfolioPieChart holdings={portfolioHoldings} />
 
-      {/* Footer */}
-      <footer className="mt-20 bg-[hsl(var(--footer-bg))] text-[hsl(var(--footer-text))] border-t border-[hsl(var(--footer-border))]">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
-            {/* About Us Section */}
-            <div>
-              <h3 className="font-bold text-[calc(1.1rem+2px)] mb-4 text-white">About Us</h3>
-              <p className="text-[0.9rem] leading-relaxed text-white">
-                We help investors make informed decisions with comprehensive portfolio tracking and market insights.
-              </p>
-            </div>
-            
-            {/* Products Section */}
-            <div>
-              <h3 className="font-bold text-[calc(1.1rem+2px)] mb-4 text-white">Products</h3>
-              <ul className="space-y-2.5 text-[0.9rem]">
-                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-white">
-                  Portfolio Management
-                </li>
-                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-white">
-                  Tracking
-                </li>
-                <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-white">
-                  Investment Advising
-                </li>
-              </ul>
-            </div>
-            
-            {/* Contact Section */}
-            <div>
-              <h3 className="font-bold text-[calc(1.1rem+2px)] mb-4 text-white">Contact</h3>
-              <div className="space-y-2.5 text-[0.9rem]">
-                <p className="text-white">
-                  Email: <a href="mailto:contact@fundtracker.com" className="text-white hover:underline transition-colors">contact@fundtracker.com</a>
+                <PortfolioTable holdings={portfolioHoldings} />
+              </div>
+            )}
+          </section>
+        </main>
+
+        {/* Footer */}
+        <footer className="mt-auto bg-[hsl(var(--footer-bg))] text-[hsl(var(--footer-text))] border-t border-[hsl(var(--footer-border))]">
+          <div className="container mx-auto px-4 py-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+              {/* About Us Section */}
+              <div>
+                <h3 className="font-bold text-[calc(1.1rem+2px)] mb-4 text-white">About Us</h3>
+                <p className="text-[0.9rem] leading-relaxed text-white">
+                  We help investors make informed decisions with comprehensive portfolio tracking and market insights.
                 </p>
-                <p className="text-white">
-                  Phone: <a href="tel:+919876543210" className="text-white hover:underline transition-colors">+91 98765 43210</a>
-                </p>
-                <div className="flex gap-4 mt-4">
-                  <a 
-                    href="https://twitter.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="text-white hover:text-primary hover:scale-110 transition-all duration-200"
-                  >
-                    <Twitter className="h-5 w-5" />
-                  </a>
-                  <a 
-                    href="https://linkedin.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="text-white hover:text-primary hover:scale-110 transition-all duration-200"
-                  >
-                    <Linkedin className="h-5 w-5" />
-                  </a>
+              </div>
+              
+              {/* Products Section */}
+              <div>
+                <h3 className="font-bold text-[calc(1.1rem+2px)] mb-4 text-white">Products</h3>
+                <ul className="space-y-2.5 text-[0.9rem]">
+                  <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-white">
+                    Portfolio Management
+                  </li>
+                  <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-white">
+                    Tracking
+                  </li>
+                  <li className="hover:text-primary hover:underline cursor-pointer transition-colors text-white">
+                    Investment Advising
+                  </li>
+                </ul>
+              </div>
+              
+              {/* Contact Section */}
+              <div>
+                <h3 className="font-bold text-[calc(1.1rem+2px)] mb-4 text-white">Contact</h3>
+                <div className="space-y-2.5 text-[0.9rem]">
+                  <p className="text-white">
+                    Email: <a href="mailto:contact@fundtracker.com" className="text-white hover:underline transition-colors">contact@fundtracker.com</a>
+                  </p>
+                  <p className="text-white">
+                    Phone: <a href="tel:+919876543210" className="text-white hover:underline transition-colors">+91 98765 43210</a>
+                  </p>
+                  <div className="flex gap-4 mt-4">
+                    <a 
+                      href="https://twitter.com" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-white hover:text-primary hover:scale-110 transition-all duration-200"
+                    >
+                      <Twitter className="h-5 w-5" />
+                    </a>
+                    <a 
+                      href="https://linkedin.com" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-white hover:text-primary hover:scale-110 transition-all duration-200"
+                    >
+                      <Linkedin className="h-5 w-5" />
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
+            
+            <div className="pt-8 border-t border-[hsl(var(--footer-border))] text-center">
+              <p className="text-[0.75rem] italic text-white">
+                Data provided by MFAPI • Updated every 5 minutes
+              </p>
+            </div>
           </div>
-          
-          <div className="pt-8 border-t border-[hsl(var(--footer-border))] text-center">
-            <p className="text-[0.75rem] italic text-white">
-              Data provided by MFAPI • Updated every 5 minutes
-            </p>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 };

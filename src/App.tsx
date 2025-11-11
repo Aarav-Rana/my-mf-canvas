@@ -13,6 +13,7 @@ import Membership from "./pages/Membership";
 import Notifications from "./pages/Notifications";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import Canvas from "./pages/Canvas";  // ← ADD THIS
 
 const queryClient = new QueryClient();
 
@@ -32,7 +33,7 @@ const App = () => (
             <Route path="/membership" element={<Membership />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/auth" element={<Auth />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/canvas" element={<Canvas />} />  {/* ← ADD THIS */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
