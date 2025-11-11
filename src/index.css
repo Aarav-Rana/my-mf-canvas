@@ -2,16 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Design system — colors, gradients, fonts, etc (all in HSL) */
 
 @layer base {
   :root {
     --hero-gradient-from: 60 22% 94%;
     --hero-gradient-via: 60 22% 94%;
     --hero-gradient-to: 60 22% 94%;
-    
+
     --background: 60 22% 94%;
     --foreground: 164 38% 16%;
 
@@ -24,9 +22,8 @@ All colors MUST be HSL.
 
     --primary: 123 46% 34%;
     --primary-foreground: 0 0% 100%;
-    
     --primary-glow: 123 46% 44%;
-    
+
     --membership: 123 46% 44%;
     --membership-foreground: 0 0% 100%;
 
@@ -38,13 +35,13 @@ All colors MUST be HSL.
 
     --accent: 123 46% 34%;
     --accent-foreground: 0 0% 100%;
-    
     --accent-dark: 123 46% 28%;
     --accent-dark-foreground: 0 0% 100%;
-    
+
     --header-bg: 60 25% 96%;
     --header-text: 172 75% 15%;
     --header-border: 0 0% 88%;
+
     --footer-bg: 164 79% 17%;
     --footer-text: 0 0% 100%;
     --footer-border: 164 79% 17%;
@@ -52,7 +49,7 @@ All colors MUST be HSL.
 
     --destructive: 0 71% 47%;
     --destructive-foreground: 0 0% 100%;
-    
+
     --success: 123 46% 34%;
     --success-foreground: 0 0% 100%;
 
@@ -61,31 +58,46 @@ All colors MUST be HSL.
     --ring: 158 64% 42%;
 
     --radius: 0.75rem;
-    
+
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-    
+
     --upload-button: 172 67% 14%;
     --upload-button-foreground: 0 0% 100%;
-    
+
     --portfolio-gain: 172 67% 14%;
     --portfolio-loss: 0 71% 47%;
-    
+
     --table-header-bg: 0 0% 96%;
     --table-row-hover: 0 0% 98%;
     --table-row-alt: 0 0% 98%;
-    
-    --gradient-primary: linear-gradient(135deg, hsl(123 46% 34%) 0%, hsl(123 46% 44%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(123 46% 34%) 0%, hsl(123 46% 44%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 96%) 0%, hsl(0 0% 94%) 100%);
-    
+
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(123 46% 34%) 0%,
+      hsl(123 46% 44%) 100%
+    );
+
+    --gradient-success: linear-gradient(
+      135deg,
+      hsl(123 46% 34%) 0%,
+      hsl(123 46% 44%) 100%
+    );
+
+    --gradient-card: linear-gradient(
+      145deg,
+      hsl(0 0% 96%) 0%,
+      hsl(0 0% 94%) 100%
+    );
+
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.04);
     --shadow-md: 0 2px 8px 0 hsl(0 0% 0% / 0.06);
     --shadow-lg: 0 10px 20px -5px hsl(0 0% 0% / 0.08);
     --shadow-hover: 0 4px 12px 0 hsl(0 0% 0% / 0.1);
-    
+
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+    /* Sidebar */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -97,91 +109,18 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --hero-gradient-from: 0 0% 26%;
-    --hero-gradient-via: 0 0% 26%;
-    --hero-gradient-to: 0 0% 26%;
-    
     --background: 0 0% 26%;
     --foreground: 0 0% 88%;
-
     --card: 0 0% 38%;
     --card-foreground: 0 0% 88%;
-    --card-border: 0 0% 30%;
-
-    --popover: 0 0% 38%;
-    --popover-foreground: 0 0% 88%;
-
-    --primary: 123 39% 75%;
-    --primary-foreground: 0 0% 13%;
-    
-    --primary-glow: 123 39% 85%;
-    
-    --membership: 123 39% 75%;
-    --membership-foreground: 0 0% 13%;
-
-    --secondary: 0 0% 38%;
-    --secondary-foreground: 0 0% 88%;
-
-    --muted: 0 0% 38%;
-    --muted-foreground: 0 0% 88%;
-
-    --accent: 123 39% 75%;
-    --accent-foreground: 0 0% 13%;
-    
-    --accent-dark: 122 39% 49%;
-    --accent-dark-foreground: 0 0% 100%;
-    
-    --header-bg: 0 0% 26%;
-    --header-text: 123 39% 75%;
-    --header-border: 0 0% 30%;
-    --footer-bg: 123 54% 23%;
-    --footer-text: 0 0% 88%;
-    --footer-border: 123 54% 18%;
-
-    --destructive: 14 100% 57%;
-    --destructive-foreground: 0 0% 100%;
-    
-    --success: 122 39% 49%;
-    --success-foreground: 0 0% 100%;
-
     --border: 0 0% 20%;
-    --input: 0 0% 20%;
     --ring: 210 79% 46%;
-    
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    
-    --table-header-bg: 240 16% 16%;
-    --table-row-hover: 240 15% 14%;
-    --table-row-alt: 240 15% 12%;
-    
-    --gradient-primary: linear-gradient(135deg, hsl(122 39% 49%) 0%, hsl(122 39% 59%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(122 39% 49%) 0%, hsl(122 39% 59%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 38%) 0%, hsl(0 0% 34%) 100%);
-    
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.5);
-    --shadow-md: 0 2px 8px 0 hsl(0 0% 0% / 0.4);
-    --shadow-lg: 0 10px 20px -5px hsl(0 0% 0% / 0.5);
-    --shadow-hover: 0 4px 12px 0 hsl(0 0% 0% / 0.6);
-
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 210 79% 46%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
   }
 
+  /* Removed invalid border-border apply */
   body {
     @apply bg-background text-foreground;
+    border-color: hsl(var(--border));
   }
 }
 
@@ -189,7 +128,7 @@ All colors MUST be HSL.
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-105;
   }
-  
+
   .story-link {
     @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
   }

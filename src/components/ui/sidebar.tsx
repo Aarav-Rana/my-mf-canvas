@@ -2,10 +2,19 @@
 "use client";
 
 import * as React from "react";
-import { BarChart3, Home, Heart, TrendingUp, Newspaper, User, Settings, LogOut } from "lucide-react";
+import {
+  BarChart3,
+  Home,
+  Heart,
+  TrendingUp,
+  Newspaper,
+  User,
+  Settings,
+  LogOut,
+  PanelLeft,
+} from "lucide-react";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
-import { PanelLeft } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -14,7 +23,12 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Link, useLocation } from "react-router-dom";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
@@ -56,6 +70,7 @@ const SidebarProvider = React.forwardRef<
   const [openMobile, setOpenMobile] = React.useState(false);
   const [_open, _setOpen] = React.useState(defaultOpen);
   const open = openProp ?? _open;
+
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value;
@@ -66,16 +81,21 @@ const SidebarProvider = React.forwardRef<
       }
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
     },
-    [setOpenProp, open],
+    [setOpenProp, open]
   );
 
   const toggleSidebar = React.useCallback(() => {
-    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
+    return isMobile
+      ? setOpenMobile((open) => !open)
+      : setOpen((open) => !open);
   }, [isMobile, setOpen, setOpenMobile]);
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
+      if (
+        event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
+        (event.metaKey || event.ctrlKey)
+      ) {
         event.preventDefault();
         toggleSidebar();
       }
@@ -96,7 +116,7 @@ const SidebarProvider = React.forwardRef<
       setOpenMobile,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
   );
 
   return (
@@ -110,7 +130,10 @@ const SidebarProvider = React.forwardRef<
               ...style,
             } as React.CSSProperties
           }
-          className={cn("group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar", className)}
+          className={cn(
+            "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
+            className
+          )}
           ref={ref}
           {...props}
         >
@@ -132,18 +155,7 @@ const Sidebar = React.forwardRef<
 >(({ side = "left", variant = "sidebar", collapsible = "offcanvas", className, children, ...props }, ref) => {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
-  if (collapsible === "none") {
-    return (
-      <div
-        className={cn("flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground", className)}
-        ref={ref}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-
+  // MOBILE SIDEBAR
   if (isMobile) {
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
@@ -158,3 +170,26 @@ const Sidebar = React.forwardRef<
         </SheetContent>
       </Sheet>
     );
+  }
+
+  // DESKTOP SIDEBAR
+  return (
+    <div
+      ref={ref}
+      data-sidebar="sidebar"
+      data-variant={variant}
+      data-state={state}
+      className={cn(
+        "flex h-full flex-col bg-sidebar text-sidebar-foreground transition-all duration-300 ease-in-out",
+        state === "collapsed" ? "w-[--sidebar-width-icon]" : "w-[--sidebar-width]",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+});
+Sidebar.displayName = "Sidebar";
+
+export { Sidebar, SidebarProvider, useSidebar };
